@@ -1,0 +1,1002 @@
+.today-lucuky-no{
+  border: solid 2px white !important;
+  
+  width: 100% !important;
+  border-radius: 20px;
+  border: 2px ;
+}
+
+.Gloden-Ank{
+    color: rgb(6, 6, 170) !important;
+    font-size: 25px;
+    font-weight: bold;
+}
+
+.Final-Ank{
+  color: rgb(6, 6, 170) !important;
+    font-size: 25px;
+    font-weight: bold;
+
+}
+.Heading-infosection{
+  font-weight: bold;
+  font-size: 20px;
+  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.Gloden-Ank-Description{
+  color: rgb(0, 0, 41);
+  font-size: 30px;
+  font-weight: bold;
+  /* border: solid 1px white;
+  display: inline-block; */
+}
+
+.scroll-container {
+  height: 100px; /* Adjust height as needed */
+  overflow: hidden;
+  position: relative;
+}
+
+.scroll-content {
+  display: inline-block;
+  animation: scroll-up 10s linear infinite;
+}
+
+@keyframes scroll-up {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+
+.content-name-city{
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.Live-Result-Heading{
+  font-size: 20px;
+  font-weight: bold;
+  background-color: #ff5733;
+  border: solid white 2px;
+  border-radius: 20px;
+}
+.Live-Result-section-main-container{
+  border: solid 1px red;
+}
+.Live-result-item-main-container{
+  border: solid 2px rgb(255, 251, 0);
+  padding: 10px;
+  background-color: black;
+}
+
+.lucky-number-section-heading{
+  font: bold;
+  font-size: 24px;
+}
+
+.notice-continer-heading{
+  background-color: #ff5733;
+  margin: 5px;
+  color: white;
+  padding: 5px;
+  border: solid 1px white;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.matkadivisionparagraph{
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.LiveResultItemHeading{
+  font-weight: bold;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-style: italic;
+  font-size: 20px;
+  color: rgb(238, 255, 3);
+}
+
+.LiveResultItemHNumber{
+  font-weight: bold;
+  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-style: italic;
+  font-size: 20px;
+  color: rgb(255, 255, 255);
+  
+}
+.live-times-value{
+  color: rgb(238, 255, 3);
+}
+.jodi-panel-container-second{
+  width: 100%;
+}
+.jodi-panel-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  border-top: solid 1px white;
+  /* Change this to 100% */
+  width: 100%; 
+  /* Remove or comment out the conflicting margin */
+  /* margin-right: 45px; */ 
+  align-items: center;
+}
+.JodiBetweenDates{
+  font-weight: bold;
+  font-size: 30px;
+}
+
+.WeekdatefirstIndex{
+  font-weight: bold;
+}
+.colNameCell{
+  font-weight: bold;
+  font-size: 25px;
+}
+
+.button-jodi-panel{
+  margin: 10px;
+  width: 100px;
+  height: 30px;
+}
+.timeStamp-for-jodi-panel{
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+  padding: 0px;
+}
+
+.jodi-panel-continer-second{
+  border: solid 1px red;
+  padding: 10px;
+}
+
+.dpboss-page {
+  background-color: #f4c392;
+  font-family: Arial, sans-serif;
+  padding: 10px;
+}
+
+.section {
+  border: 2px solid #d71b38;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: #f4c392;
+}
+
+.section.red {
+  background-color: #d71b38;
+  color: white;
+}
+
+.section.red h2 {
+  font-size: 18px;
+  text-align: center;
+  margin-bottom: 10px;
+  font-weight: bold;
+  text-shadow: 1px 1px #333;
+}
+
+.section.red ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #ffeaea;
+  line-height: 1.8;
+  text-align: center;
+  font-size: 15px;
+}
+.home-page-main-container{
+  width: 100%;
+}
+
+.data-block h3 {
+  color: #d71b38;
+  text-align: center;
+  font-style: italic;
+  font-size: 14px;
+}
+
+.data-block pre {
+  text-align: center;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: bold;
+  color: #000;
+  font-size: 15px;
+  
+}
+
+/* .AddGameModelMainContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.AddGameModelSeconContainer {
+  background: #fff;
+  padding: 30px; /* Increased padding */
+  /* border-radius: 8px;
+  min-width: 350px; /* Slightly wider modal */
+  /* box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); */
+/* } */ 
+/* Add this to your CSS */
+/* Fullscreen overlay */
+.AddGameModelMainContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  /* This is what centers the content */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.AddGameModelSeconContainer {
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  /* The margin: auto; is unnecessary and can cause issues.
+     The parent container's flex properties handle the centering. */
+}
+
+
+
+
+.AddGameModelSeconContainer form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Adds space between each form group */
+}
+
+/* Styles for labels and inputs */
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: bold;
+  margin-bottom: 5px; /* Space between label and input */
+  color: #333;
+}
+
+.form-group input {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.25);
+}
+
+/* Styles for buttons */
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px; /* Space above the buttons */
+}
+
+/* Home page button */
+.header-btn.home {
+  background: #007bff;
+  color: white;
+  margin-right: 10px;
+}
+.button-group button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  transition: background-color 0.2s ease;
+}
+
+.button-group button[type="submit"] {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.button-group button[type="submit"]:hover {
+  background-color: #0056b3;
+}
+
+.button-group button[type="button"] {
+  background-color: #e9ecef;
+  color: #495057;
+}
+
+.button-group button[type="button"]:hover {
+  background-color: #d8dbe0;
+}
+
+/* EditModal.css */
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 300px;
+}
+
+.modal-container h4 {
+  margin-bottom: 15px;
+}
+
+.modal-container input {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-container button {
+  padding: 6px 12px;
+  margin-right: 5px;
+}
+.go-bottom {
+  background-color: #5ebdfc;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.go-up {
+  background-color: #5ebdfc;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.matka-table {
+  border-collapse: collapse;
+  margin: auto;
+  background-color: #f4b183;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+.matka-table th,
+.matka-table td {
+  border: 1px solid #000;
+  padding: 8px;
+}
+
+.matka-table .title {
+  background-color: #003399;
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.matka-table .day {
+  background-color: gold;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.red {
+  color: red;
+  font-weight: bold;
+}
+
+.matka-table .cell {
+  justify-content: center;
+  align-items: center;
+  width: 100px;
+  text-align: center;
+}
+
+.data-of-jodi-open-close{
+  display: flex;
+  justify-content: space-between;
+}
+
+.matka-table .small {
+  font-size: 20px;
+  display: flex;
+  flex-direction: column;
+  font-weight:100;
+  justify-content: center;
+  align-items: center;
+  line-height: 14px;
+}
+
+.matka-table .big {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.matka-table .red {
+  color: red;
+}
+
+
+
+/* Main modal overlay */
+.AddGameModelMainContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+  padding: 10px; /* ensures spacing on mobile */
+}
+
+/* Modal content box */
+.AddGameModelSeconContainer {
+  background: #fff;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px; /* keep it smaller on desktop */
+  max-height: 90vh; /* prevent vertical overflow */
+  overflow-y: auto; /* scrollable content on small screens */
+  padding: 20px;
+}
+
+/* Make inputs/buttons take full width */
+.AddGameModelSeconContainer input,
+.AddGameModelSeconContainer select{
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.addGame-Save-button{
+  width: 40%;
+}
+.panel-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.matka-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  font-size: 0.8rem;
+}
+
+.matka-table th, .matka-table td {
+  border: 1px solid #ccc;
+  padding: 4px 6px;
+  text-align: center;
+}
+
+.matka-table .title {
+  font-size: 1rem;
+  padding: 6px 0;
+  background-color: #f8f9fa;
+  color: #333;
+}
+
+.data-of-jodi-open-close {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 4px;
+}
+
+.small-panel p {
+  margin: 0;
+  font-size: 0.7rem;
+  line-height: 1;
+}
+
+.big-jodi {
+  font-size: 1rem;
+  font-weight: bold;
+  min-width: 28px;
+  text-align: center;
+}
+
+.big-jodi.red {
+  color: red;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+  .matka-table th, .matka-table td {
+    padding: 2px 4px;
+    font-size: 0.7rem;
+  }
+  .week-cell{
+    font-size: 16px;
+    width: 50%;
+  }
+
+  .big-jodi {
+    font-size: 0.85rem;
+    min-width: 24px;
+  }
+
+  .title {
+    font-size: 0.9rem;
+  }
+
+}
+
+/* GENERAL STYLING */
+.today-lucuky-no{
+  border: solid 2px white !important;
+  width: 100% !important;
+  border-radius: 20px;
+}
+
+.Gloden-Ank,
+.Final-Ank {
+  color: rgb(6, 6, 170) !important;
+  font-size: 25px;
+  font-weight: bold;
+}
+
+.Heading-infosection {
+  font-weight: bold;
+  font-size: 20px;
+  font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+
+.Gloden-Ank-Description {
+  color: rgb(0, 0, 41);
+  font-size: 30px;
+  font-weight: bold;
+}
+
+.scroll-container {
+  height: 100px;
+  overflow: hidden;
+  position: relative;
+}
+
+.scroll-content {
+  display: inline-block;
+  animation: scroll-up 10s linear infinite;
+}
+
+@keyframes scroll-up {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(-100%); }
+}
+
+.content-name-city {
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.Live-Result-Heading {
+  font-size: 20px;
+  font-weight: bold;
+  background-color: #ff5733;
+  border: solid white 2px;
+  border-radius: 20px;
+}
+
+.Live-Result-section-main-container,
+.Live-result-item-main-container {
+  border: solid 1px rgb(255, 217, 0);
+}
+
+
+
+.notice-continer-heading {
+  background-color: #ff5733;
+  margin: 5px;
+  color: white;
+  padding: 5px;
+  border: solid 1px white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.matkadivisionparagraph {
+  font-weight: bold;
+  font-size: 13px;
+}
+
+.home-page-main-container {
+  width: 100%;
+}
+
+/* ------------------------ */
+/*     PANEL TABLE CSS      */
+/* ------------------------ */
+
+.panel-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.matka-table {
+  border-collapse: collapse;
+  width: 100%;
+  background-color: #f4b183;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+/* Table Cells */
+.matka-table th,
+.matka-table td {
+  border: 1px solid black;
+  padding: 4px 6px;
+  text-align: center;
+  vertical-align: middle !important;
+}
+
+/* Header Title */
+.matka-table .title {
+  background-color: #003399;
+  color: white;
+  font-weight: bold;
+  padding: 10px 0;
+  font-size: 18px;
+}
+
+/* Days Row */
+.matka-table .day {
+  background-color: gold;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+/* WEEK COLUMN */
+.week-cell {
+  background-color: #ffe39a;
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 1.2;
+  padding: 4px 2px !important;
+}
+
+/* Jodi Red Number */
+.red {
+  color: red !important;
+  font-weight: bold;
+}
+
+/* -------------------------------- */
+/* OPEN – JODI – CLOSE LAYOUT FIX   */
+/* -------------------------------- */
+
+.data-of-jodi-open-close {
+  display: flex;
+  flex-direction: row;
+  justify-content: center; 
+  align-items: center;
+  gap: 6px;
+  height: 100%;
+}
+
+/* OPEN PANEL + CLOSE PANEL (vertical digits) */
+.small-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 14px;
+  font-size: 16px;
+  font-weight: bold;
+  width: 20px; 
+}
+
+/* JODI (big center digits) */
+.big-jodi {
+  font-size: 22px;
+  font-weight: bold;
+  min-width: 28px;
+  text-align: center;
+}
+
+.big-jodi.red {
+  color: red !important;
+}
+
+/* REMOVE EXTRA SPACING */
+.matka-table .cell {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+/* -------------------------------- */
+/* MOBILE RESPONSIVE FIXES          */
+/* -------------------------------- */
+@media (max-width: 768px) {
+  .matka-table th,
+  .matka-table td {
+    padding: 2px !important;
+    font-size: 0.75rem;
+  }
+
+  .week-cell {
+    font-size: 13px;
+    width: 60px;
+  }
+
+  .small-panel {
+    font-size: 14px;
+    width: 16px;
+    line-height: 12px;
+  }
+
+  .big-jodi {
+    font-size: 18px;
+    min-width: 24px;
+  }
+
+  .matka-table .day {
+    font-size: 16px;
+  }
+}
+
+/* Go to Bottom Button */
+.go-bottom {
+  background-color: #5ebdfc;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+.go-up {
+  background-color: #5ebdfc;
+  border: none;
+  padding: 10px 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+/* ------------------------------ */
+/* EXTRA MODAL CSS (YOUR ORIGINAL)*/
+/* ------------------------------ */
+
+.AddGameModelMainContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050;
+}
+
+.AddGameModelSeconContainer {
+  background: white;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.AddGameModelSeconContainer input,
+.AddGameModelSeconContainer select {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.addGame-Save-button {
+  width: 40%;
+}
+
+.live-times {
+  display: flex;
+  justify-content: space-around;
+  padding: 0 20px;
+  font-size: 16px;
+  font-weight: bold;
+  margin-top: 6px;
+}
+
+.dpboss-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.dpboss-dp {
+  font-family: "Brush Script MT", "Pacifico", cursive;
+  font-size: 2.7rem;
+  color: #ff008c;
+  font-weight: 900;
+  margin-right: 6px;
+}
+
+.dpboss-rest {
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: black;
+  letter-spacing: 1px;
+}
+
+/* Full Header Box */
+.header-container {
+  background-color: #ffcc99;
+  padding: 12px 0;
+  border: 2px solid #ffffff;
+  border-radius: 10px;
+}
+
+/* Inner layout */
+.header-inner {
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Branding */
+.logo-block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Pink “Dp” — EXACT dpboss style */
+.logo-dp {
+  font-family: "Brush Script MT", "Pacifico", cursive;
+  font-size: 5rem;
+  font-weight: 900;
+  color: #ff008c;
+  margin-right: 6px;
+}
+
+/* “BOSS Services” — clean bold black */
+.logo-rest {
+  font-size: 2.1rem;
+  font-weight: 900;
+  color: #000;
+  letter-spacing: 1px;
+}
+
+/* Login / Logout Buttons */
+.header-actions {
+  text-align: right;
+}
+
+.header-btn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-weight: bold;
+  border: none;
+  font-size: 1rem;
+}
+
+.header-btn.login {
+  background-color: #007bff;
+  color: white;
+}
+
+.header-btn.logout {
+  background-color: #ff00a1;
+  color: white;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .logo-dp {
+    font-size: 2.4rem;
+  }
+  .logo-rest {
+    font-size: 1.4rem;
+  }
+  .header-btn {
+    padding: 5px 12px;
+    font-size: 0.9rem;
+  }
+  .header-inner {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+
+.welcome-banner {
+  background-color: #ffcc99;
+  border: 2px solid white;
+  margin-top: 3px;
+  padding: 14px 10px;
+  border-radius: 10px;
+  text-align: center;
+  display: flex;
+  justify-content: space-around;
+}
+
+/* Logo Styling */
+.banner-logo {
+  width: 150px;
+  height: auto;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  border: 2px solid #ff008c;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Website Name */
+.site-name {
+  font-size: 1.9rem;
+  font-weight: 900;
+  margin-top: 6px;
+  margin-bottom: 4px;
+  color: #ff008c;
+  font-family: "Poppins", sans-serif;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Welcome message */
+.welcome-message {
+  font-size: 1.1rem;
+  color: #000;
+  font-weight: 600;
+  line-height: 1.5;
+  margin-top: 5px;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* Mobile Responsive */
+@media (max-width: 480px) {
+  .banner-logo {
+    width: 90px;
+  }
+  .site-name {
+    font-size: 1.5rem;
+  }
+  .welcome-message {
+    font-size: 0.95rem;
+  }
+}
