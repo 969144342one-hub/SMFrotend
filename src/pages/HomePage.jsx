@@ -14,21 +14,22 @@ import MainBombay36Bazar from "../components/MainBombay36Bazar";
 import DpBossPage from "../components/DpBossPage";
 import UserPayments from "../components/AgentList";
 import NotificationPage from "../components/NoticationPage";
-import AllPageLink from '../components/allLinkPage'
+import AllPageLink from "../components/allLinkPage";
+import ApiPoller from "../components/ApiCaller";
 import { api } from "../lib/api";
 import { jwtDecode } from "jwt-decode";
 
 // --- New Component for Static Buttons ---
 
 const handleRefresh = () => {
-    // Refresh the current page
-    window.location.reload();
-  };
+  // Refresh the current page
+  window.location.reload();
+};
 
-  const handleCall = () => {
-    // Opens dialer with number
-    window.location.href = "tel:+919691443421"; // ← replace with your number
-  };
+const handleCall = () => {
+  // Opens dialer with number
+  window.location.href = "tel:+919691443421"; // ← replace with your number
+};
 const StaticButtons = () => {
   // Use a React Portal to render the buttons outside the normal DOM hierarchy.
   return ReactDOM.createPortal(
@@ -42,7 +43,7 @@ const StaticButtons = () => {
         justifyContent: "space-between",
         flexDirection: "row",
         gap: "10px",
-        width: "95%"
+        width: "95%",
       }}
     >
       {/* 📞 Dial Pad Button */}
@@ -87,21 +88,20 @@ const StaticButtons = () => {
 const HomePage = ({ setGameTitle }) => {
   const [responseNotification, setResponseNotification] = useState([]);
   const token = localStorage.getItem("authToken");
-  
-    // let username = null;
-    let role = null;
-  
-    if (token) {
-      try {
-        const decoded = jwtDecode(token);
-        // role = decoded.role;
-        role = decoded.role;
-      } catch (err) {
-        console.error("Invalid token", err);
-      }
+
+  // let username = null;
+  let role = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      // role = decoded.role;
+      role = decoded.role;
+    } catch (err) {
+      console.error("Invalid token", err);
     }
-  
-  
+  }
+
   // --- Fetch Notifications (Logic remains the same) ---
   const handleGetNotification = async () => {
     const API_URL = "/Notification/update-noti";
@@ -151,7 +151,7 @@ const HomePage = ({ setGameTitle }) => {
   return (
     <>
       {/* 🛑 CONDITIONAL RENDERING FOR ADMIN BUTTONS */}
-       <StaticButtons />
+      <StaticButtons />
 
       {/* Existing Page Content */}
       <div
@@ -171,6 +171,7 @@ const HomePage = ({ setGameTitle }) => {
         )}
 
         <InfoSection />
+        {role === "Admin" && <ApiPoller />}
         <NotificationPage
           role={role}
           notificationMessage={responseNotification?.[1] || {}}
@@ -189,9 +190,9 @@ const HomePage = ({ setGameTitle }) => {
           notificationMessage={responseNotification?.[2] || {}}
         />
         <StarlStarlineSectionineTable />
-        <MainBombay36Bazar />
-        <AllPageLink page={"JodiPanPage"}/>
-        <AllPageLink page={"PanelPage"}/>
+        {/* <MainBombay36Bazar /> */}
+        <AllPageLink page={"JodiPanPage"} />
+        <AllPageLink page={"PanelPage"} />
         <DpBossPage />
         <NotificationPage
           role={role}
