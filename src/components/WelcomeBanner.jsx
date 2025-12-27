@@ -16,8 +16,8 @@ const WelcomeBanner = () => {
 
           {/* logo-block can stay as div */}
           <div className="logo-block">
-            <span className="logo-dp">Dp</span>
-            <span className="logo-rest">BOSS Services</span>
+            <span className="logo-dp">Satta</span>
+            <span className="logo-rest">Matka Aajj Tak</span>
           </div>
 
           Fastest Satta Matka Results | Live Jodi • Panel • Fix Games
