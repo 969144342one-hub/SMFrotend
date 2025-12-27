@@ -98,31 +98,27 @@ export default function SimpleEndpointUI() {
       console.log("Checking game windows at:", new Date().toLocaleTimeString());
 
       gamesForCalling.forEach((game) => {
-
         // Assuming game.startTime and game.closeTime are valid Date strings or timestamps
         const start = new Date(game.startTime).getTime();
-        
+
         const close = new Date(game.closeTime).getTime();
-        
+
         // Define Windows
         const isWithinStartWindow =
           now >= start - FIVE_MIN && now <= start + TEN_MIN;
-        
+
         const isWithinCloseWindow =
           now >= close - FIVE_MIN && now <= close + TEN_MIN;
-        
 
         if (isWithinStartWindow) {
           console.log(`[START WINDOW] Calling API for: ${game.name}`);
           triggerGameAPI(game, "start");
         }
-        
 
         if (isWithinCloseWindow) {
           console.log(`[CLOSE WINDOW] Calling API for: ${game.name}`);
           triggerGameAPI(game, "close");
         }
-        
       });
     };
 
@@ -192,7 +188,7 @@ export default function SimpleEndpointUI() {
       });
       // if (response.success) {
       //   alert("Games updated successfully!");
-        
+
       // } else {
       //   alert("Failed: " + response.error);
       // }
@@ -284,6 +280,26 @@ export default function SimpleEndpointUI() {
       <hr />
 
       <h4>Select Games to Add</h4>
+      <div style={{ marginBottom: "15px" }}>
+        <label
+          style={{ fontWeight: "bold", display: "block", marginBottom: "6px" }}
+        >
+          API / Game Form URL
+        </label>
+        <input
+          type="text"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="Enter URL here"
+          style={{
+            width: "100%",
+            padding: "10px",
+            borderRadius: "6px",
+            border: "1px solid #ccc",
+          }}
+        />
+      </div>
+
       <select
         multiple
         value={selectedGames}
