@@ -1,217 +1,55 @@
 import React, { useEffect, useState } from "react";
 import { api } from "../lib/api";
 import { jwtDecode } from "jwt-decode";
-import { Alert } from "bootstrap";
 
 export default function SimpleEndpointUI() {
   const [url, setUrl] = useState("");
-  const [isActive, setIsActive] = useState(false); // This controls the color
+  const [isActive, setIsActive] = useState(false);
+
   const [games, setGames] = useState([]);
-  const [avialbeUrl, setAvialbeUrl] = useState(null);
+  const [availableGames, setAvailableGames] = useState([]);
   const [selectedGames, setSelectedGames] = useState([]);
-  const [filterGames, setFilterGames] = useState([]);
-  const [userSelectGames, setUserSelectGames] = useState([]);
-  const [gamesForCalling, setGamesForCalling] = useState([]);
+  const [existingGames, setExistingGames] = useState([]);
+  const [record, setRecord] = useState(null);
 
   const token = localStorage.getItem("authToken");
-
   let username = null;
   let role = null;
 
   if (token) {
     try {
       const decoded = jwtDecode(token);
-      role = decoded.role;
       username = decoded.username;
+      role = decoded.role;
     } catch (err) {
       console.error("Invalid token", err);
     }
   }
 
-  // Fetch all data
+  // 🔹 Load data ONLY for UI
   const initializeData = async () => {
     try {
-      const allGamesRes = await api("/AllGames/", { method: "GET" });
+      const allGamesRes = await api("/AllGames/");
       const masterGames = allGamesRes.data;
-
       setGames(masterGames);
 
       const recordRes = await api("/AllGames/getGamesAndUrl");
-      if (recordRes.data && recordRes.data.length > 0) {
-        const record = recordRes.data[0];
+      if (recordRes.data?.length) {
+        const rec = recordRes.data[0];
+        setRecord(rec);
+        setUrl(rec.url || "");
+        setIsActive(rec.enabled || false);
+        setExistingGames(rec.ArrayOfGames || []);
 
-        setAvialbeUrl(record);
-        setUserSelectGames(record.ArrayOfGames || []);
-        setUrl(record.url || "");
-        setIsActive(record.enabled || false); // Set initial color state from DB
-
-        const savedIdSet = new Set(
-          (record.ArrayOfGames || []).map((id) => String(id))
+        const existingSet = new Set(rec.ArrayOfGames.map(String));
+        setAvailableGames(
+          masterGames.filter((g) => !existingSet.has(String(g._id)))
         );
-        setFilterGames(
-          masterGames.filter((g) => !savedIdSet.has(String(g._id)))
-        );
-
-        const callingList = [];
-        masterGames.forEach((e) => {
-          if (recordRes.data[0]?.ArrayOfGames.includes(e._id)) {
-            callingList.push(e); // Push to calling list
-          }
-        });
-
-        setGamesForCalling(callingList);
+      } else {
+        setAvailableGames(masterGames);
       }
     } catch (err) {
       console.error(err);
-    }
-  };
-
-  // const getTheUrlGameDetils = async () => {
-  //   const fetchData = await api("/AllGames/getGamesAndUrl");
-  //   const savedIds = fetchData.data[0]?.ArrayOfGames || [];
-
-  //   const callingList = []; // Temp array for "pushed" items
-  //   const filterList = [];
-
-  //   games.forEach((e) => {
-  //     if (fetchData.data[0]?.ArrayOfGames.includes(e._id)) {
-  //       callingList.push(e); // Push to calling list
-  //     }
-  //   });
-
-  //   // Save to state so the scheduler can see them
-  //   setGamesForCalling(callingList);
-  //   console.log(callingList);
-
-  //   setFilterGames(filterList);
-  //   setUserSelectGames(savedIds);
-  //   setAvialbeUrl(fetchData.data[0]);
-  // };
-
-  useEffect(() => {
-    // This function checks the time for all active games
-    const checkGameWindows = () => {
-      const now = new Date().getTime(); // Current time in milliseconds
-      const FIVE_MIN = 5 * 60 * 1000;
-      const TEN_MIN = 10 * 60 * 1000;
-
-      console.log("Checking game windows at:", new Date().toLocaleTimeString());
-
-      gamesForCalling.forEach((game) => {
-        // Assuming game.startTime and game.closeTime are valid Date strings or timestamps
-        const start = new Date(game.startTime).getTime();
-
-        const close = new Date(game.closeTime).getTime();
-
-        // Define Windows
-        const isWithinStartWindow =
-          now >= start - FIVE_MIN && now <= start + TEN_MIN;
-
-        const isWithinCloseWindow =
-          now >= close - FIVE_MIN && now <= close + TEN_MIN;
-
-        if (isWithinStartWindow) {
-          console.log(`[START WINDOW] Calling API for: ${game.name}`);
-          triggerGameAPI(game, "start");
-        }
-
-        if (isWithinCloseWindow) {
-          console.log(`[CLOSE WINDOW] Calling API for: ${game.name}`);
-          triggerGameAPI(game, "close");
-        }
-      });
-    };
-
-    // Run the check every 30 seconds
-    const interval = setInterval(checkGameWindows, 30000);
-
-    // Cleanup interval when component unmounts
-    return () => clearInterval(interval);
-  }, [gamesForCalling]); // Runs again if the list of games changes
-
-  useEffect(() => {
-    // Helper: convert "HH:mm" string into total minutes since midnight
-    const parseTimeToMinutes = (timeStr) => {
-      if (!timeStr) return null;
-      const [h, m] = timeStr.split(":").map(Number);
-      return h * 60 + m;
-    };
-
-    // Only run if the system is active and we have games to call
-    if (!isActive || gamesForCalling.length === 0) return;
-
-    const scheduler = setInterval(() => {
-      const now = new Date();
-      const currentTime = now.getHours() * 60 + now.getMinutes(); // Current time in minutes
-
-      gamesForCalling.forEach((game) => {
-        const gameStartMins = parseTimeToMinutes(game.startTime);
-        const gameCloseMins = parseTimeToMinutes(game.endTime);
-
-        if (gameStartMins === null || gameCloseMins === null) {
-          console.warn(`Invalid time format for game ${game.name}`);
-          return;
-        }
-
-        // Define Windows (5 mins before to 10 mins after)
-        const inStartWindow =
-          currentTime >= gameStartMins - 5 && currentTime <= gameStartMins + 10;
-        const inCloseWindow =
-          currentTime >= gameCloseMins - 5 && currentTime <= gameCloseMins + 10;
-
-        // Trigger API if inside window
-        if (inStartWindow) {
-          console.log(`Triggering START API for ${game.name}`);
-          callExternalAPI(game, "START");
-        }
-        if (inCloseWindow) {
-          console.log(`Triggering CLOSE API for ${game.name}`);
-          callExternalAPI(game, "CLOSE");
-        }
-      });
-    }, 30000); // Check every 30 seconds
-
-    return () => clearInterval(scheduler); // Cleanup when component unmounts
-  }, [isActive, gamesForCalling]);
-
-  const callExternalAPI = async (game, type) => {
-    // This is the API you want to call every 5-10 mins
-    console.log(`Calling API for ${game.name} - Type: ${type}`);
-    try {
-      const response = await api("/AllGames/api/getGameFormLink", {
-        method: "POST",
-        body: JSON.stringify({
-          url: avialbeUrl.url,
-          userName: username,
-          admin: role,
-        }),
-      });
-      // if (response.success) {
-      //   alert("Games updated successfully!");
-
-      // } else {
-      //   alert("Failed: " + response.error);
-      // }
-    } catch (err) {
-      console.error("Error updating from link:", err);
-    }
-    // await api("/your-endpoint", { method: "POST", body: { id: game._id, type } });
-  };
-
-  // The actual API call function
-  const triggerGameAPI = async (game, type) => {
-    try {
-      // Replace with your actual endpoint logic
-      await api("/execute-game-action", {
-        method: "POST",
-        body: JSON.stringify({
-          gameId: game._id,
-          type: type, // "start" or "close"
-          timestamp: new Date(),
-        }),
-      });
-    } catch (err) {
-      console.error(`Failed to call API for ${game.name}:`, err);
     }
   };
 
@@ -219,87 +57,122 @@ export default function SimpleEndpointUI() {
     initializeData();
   }, []);
 
-  // 1. Toggle color and state locally
+  // 🔹 Toggle Start / Stop (NO API)
   const handleStatusToggle = () => {
-    setIsActive(!isActive);
+    setIsActive((prev) => !prev);
   };
 
-  const addItem = async () => {
-    const BodyData = {
-      url: url,
-      ArrayOfGames: selectedGames,
-      enabled: isActive, // Sends the current Start/Stop state
-    };
+  // 🔹 Add selected games
+  const handleAddGames = () => {
+    const combined = [...existingGames, ...selectedGames];
+    setExistingGames(combined);
 
-    await api("/AllGames/endpoints", {
-      method: "POST",
-      body: JSON.stringify(BodyData),
-    });
+    const removeSet = new Set(selectedGames.map(String));
+    setAvailableGames((prev) =>
+      prev.filter((g) => !removeSet.has(String(g._id)))
+    );
 
-    alert("Configuration Saved!");
-    initializeData();
     setSelectedGames([]);
+  };
+
+  // 🔹 REMOVE game feature ✅
+  const handleRemoveGame = async (gameId) => {
+    try {
+      await api("/AllGames/remove-game", {
+        method: "PUT",
+        body: JSON.stringify({ gameId }),
+      });
+
+      alert("Game removed permanently");
+
+      // Reload fresh data from DB
+      initializeData();
+    } catch (err) {
+      console.error("Remove failed", err);
+      alert("Failed to remove game");
+    }1
+  };
+
+  // 🔹 SAVE – ONLY API CALL
+  const handleSave = async () => {
+    try {
+      await api("/AllGames/endpoints", {
+        method: "POST",
+        body: JSON.stringify({
+          url,
+          ArrayOfGames: existingGames,
+          enabled: isActive,
+          userName: username,
+          admin: role,
+        }),
+      });
+
+      alert("Configuration saved successfully!");
+      initializeData();
+    } catch (err) {
+      console.error(err);
+      alert("Save failed");
+    }
   };
 
   return (
     <div
       style={{
-        ...styles.containerApicaller,
-        borderTop: `10px solid ${isActive ? "#2ecc71" : "#e74c3c"}`, // Visual indicator on top border
+        ...styles.container,
+        borderTop: `8px solid ${isActive ? "#2ecc71" : "#e74c3c"}`,
       }}
     >
       <h3 style={{ color: isActive ? "#27ae60" : "#c0392b" }}>
         System Status: {isActive ? "ACTIVE" : "INACTIVE"}
       </h3>
 
-      <div style={styles.statusSection}>
-        <p>
-          Current Link: <strong>{avialbeUrl?.url}</strong>
-        </p>
-        <h4>Games already in this Record:</h4>
-        <ul>
-          {userSelectGames.map((gameId) => {
-            const gameObj = games.find((g) => String(g._id) === String(gameId));
-            return (
-              <li key={gameId}>{gameObj ? gameObj.name : "Loading..."}</li>
-            );
-          })}
-        </ul>
-        {/* The Toggle Button with Dynamic Colors */}
-        <button
-          onClick={handleStatusToggle}
-          style={{
-            ...styles.toggleBtn,
-            backgroundColor: isActive ? "#e74c3c" : "#2ecc71", // Green if stopped, Red if started
-          }}
-        >
-          {isActive ? "CLICK TO STOP" : "CLICK TO START"}
-        </button>
-      </div>
+      <button
+        onClick={handleStatusToggle}
+        style={{
+          ...styles.toggleBtn,
+          backgroundColor: isActive ? "#e74c3c" : "#2ecc71",
+        }}
+      >
+        {isActive ? "STOP SYSTEM" : "START SYSTEM"}
+      </button>
 
       <hr />
 
-      <h4>Select Games to Add</h4>
-      <div style={{ marginBottom: "15px" }}>
-        <label
-          style={{ fontWeight: "bold", display: "block", marginBottom: "6px" }}
-        >
-          API / Game Form URL
-        </label>
-        <input
-          type="text"
-          value={url}
-          onChange={(e) => setUrl(e.target.value)}
-          placeholder="Enter URL here"
-          style={{
-            width: "100%",
-            padding: "10px",
-            borderRadius: "6px",
-            border: "1px solid #ccc",
-          }}
-        />
-      </div>
+      {/* URL INPUT */}
+      <label style={styles.label}>API / Game URL</label>
+      <input
+        value={url}
+        onChange={(e) => setUrl(e.target.value)}
+        placeholder="Enter URL"
+        style={styles.input}
+      />
 
+      <hr />
+
+      {/* EXISTING GAMES */}
+      <h4>Selected Games</h4>
+      {existingGames.length === 0 && <p>No games selected</p>}
+      <ul>
+        {existingGames.map((id) => {
+          const game = games.find((g) => String(g._id) === String(id));
+          return (
+            <li key={id} style={styles.gameItem}>
+              {game?.name}
+              <button
+                onClick={() => handleRemoveGame(id)}
+                style={styles.removeBtn}
+              >
+                ❌ Remove
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+
+      <hr />
+
+      {/* ADD GAMES */}
+      <h4>Add More Games</h4>
       <select
         multiple
         value={selectedGames}
@@ -310,61 +183,84 @@ export default function SimpleEndpointUI() {
         }
         style={styles.multiSelect}
       >
-        {filterGames.map((game) => (
-          <option key={game._id} value={game._id}>
-            {game.name}
+        {availableGames.map((g) => (
+          <option key={g._id} value={g._id}>
+            {g.name}
           </option>
         ))}
       </select>
 
-      <button onClick={addItem} style={styles.saveBtn}>
+      <button onClick={handleAddGames} style={styles.addBtn}>
+        Add Selected Games
+      </button>
+
+      <button onClick={handleSave} style={styles.saveBtn}>
         Save & Update Record
       </button>
     </div>
   );
 }
 
+/* ================= STYLES ================= */
+
 const styles = {
-  containerApicaller: {
-    // maxWidth: "500px",
-    // margin: "20px auto",
+  container: {
     padding: "20px",
+    background: "#fff",
     borderRadius: "12px",
-    backgroundColor: "#fff",
     boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
     fontFamily: "sans-serif",
   },
-  statusSection: {
-    padding: "15px",
-    backgroundColor: "#f9f9f9",
-    borderRadius: "8px",
-    marginBottom: "20px",
-    textAlign: "center",
+  label: { fontWeight: "bold" },
+  input: {
+    width: "100%",
+    padding: "10px",
+    marginBottom: "15px",
+    borderRadius: "6px",
+    border: "1px solid #ccc",
   },
   toggleBtn: {
-    color: "white",
+    color: "#fff",
+    padding: "10px 20px",
     border: "none",
-    padding: "12px 24px",
     borderRadius: "25px",
-    fontWeight: "bold",
     cursor: "pointer",
-    transition: "0.3s",
+    marginBottom: "20px",
   },
-  saveBtn: {
-    width: "100%",
-    padding: "12px",
-    backgroundColor: "#34495e",
+  gameItem: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: "6px",
+  },
+  removeBtn: {
+    background: "#e74c3c",
     color: "white",
     border: "none",
-    borderRadius: "6px",
-    marginTop: "20px",
+    borderRadius: "4px",
     cursor: "pointer",
+    padding: "2px 8px",
   },
   multiSelect: {
     width: "100%",
     height: "120px",
+    marginTop: "10px",
+  },
+  addBtn: {
+    marginTop: "10px",
+    width: "100%",
     padding: "10px",
+    background: "#3498db",
+    color: "white",
+    border: "none",
     borderRadius: "6px",
-    border: "1px solid #ddd",
+  },
+  saveBtn: {
+    marginTop: "15px",
+    width: "100%",
+    padding: "12px",
+    background: "#2c3e50",
+    color: "white",
+    border: "none",
+    borderRadius: "6px",
   },
 };

@@ -4,7 +4,7 @@ import React from "react";
 const LiveResultItem = ({ title, numbers, openTime, closeTime }) => {
   return (
     <div className="text-center mb-4 m-1 Live-result-item-main-container ">
-      <h5 className="text-uppercase fw-bold LiveResultItemHeading">{title}</h5>
+      <h1 className="text-uppercase fw-bold LiveResultItemHeading">{title}</h1>
       <p className="fs-5 fw-semibold  LiveResultItemHNumber">{numbers}</p>
       <div className="live-times">
         <span className="live-times-value">{openTime}</span>
