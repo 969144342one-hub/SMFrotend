@@ -1229,7 +1229,7 @@ export default function JodiPannelResultSection() {
                       <input
                         type="range"
                         min="12"
-                        max="27"
+                        max="50"
                         value={nameSizes[item._id] || 18}
                         onChange={(e) =>
                           setNameSizes({

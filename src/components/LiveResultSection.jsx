@@ -145,7 +145,7 @@ const LiveResultSection = () => {
   if (loading) {
     return (
       <div
-        className="bg-warning border border-white m-1 p-3 Live-Result-section-main-container bg-[#ffea00]"
+        className="bg-warning border border-white Live-Result-section-main-container bg-[#ffea00]"
       >
         <div className="bg-pink text-white text-center  mb-4 fw-bold Live-Result-Heading">
           <h2>💥LIVE RESULT💥</h2>
@@ -157,7 +157,7 @@ const LiveResultSection = () => {
 
   return (
     <div
-      className="border border-white m-1 p-3 Live-Result-section-main-container"
+      className="border border-white m-1 p-1 Live-Result-section-main-container"
       style={{ backgroundColor: "#ffcc99" }}
     >
       <div
@@ -167,7 +167,7 @@ const LiveResultSection = () => {
         <h3 style={{ fontSize: "1.2rem", margin: 0 }}>💥LIVE RESULT💥</h3>
       </div>
 
-      <div className="row">
+      <div className="" style={{width:"100%", backgroundColor:"black", margin:"0px"}}>
         {error ? (
           <p className="text-center text-danger"  style={{ backgroundColor: "black" }}>{error}</p>
         ) : results.length > 0 ? (
