@@ -167,7 +167,7 @@ const LiveResultSection = () => {
         <h3 style={{ fontSize: "1.2rem", margin: 0 }}>💥LIVE RESULT💥</h3>
       </div>
 
-      <div className="" style={{width:"100%", backgroundColor:"black", margin:"0px"}}>
+      <div className="" style={{width:"100%", margin:"0px"}}>
         {error ? (
           <p className="text-center text-danger"  style={{ backgroundColor: "black" }}>{error}</p>
         ) : results.length > 0 ? (
