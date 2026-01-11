@@ -261,7 +261,7 @@ export default function JodiPannelResultSection() {
           status: "Active",
           nameColor: "#000000",
           resultColor: "#000000",
-          panelColor: "#ffcb99",
+          panelColor: "#c9f3f6",
           notificationColor: "#ff0000",
         });
         fetchGamesAgain();
@@ -1016,7 +1016,7 @@ export default function JodiPannelResultSection() {
   return (
     <div
       className=" border border-white p-0.5" // <--- 'm-1' and 'p-3' create space
-      style={{ backgroundColor: "#ffcc99", width: "100%" }}
+      style={{ backgroundColor: "#c9f3f6", width: "100%" }}
     >
       <div className="bg-pink m-1 p-2 jodi-panel-container-second">
         <h3>SABSE PAHILE OR SABSE SAHI FAST SATTA MATKA RESULT</h3>
@@ -1207,6 +1207,7 @@ export default function JodiPannelResultSection() {
                   textAlign: "center",
                   padding: "5px",
                   borderRadius: "15px",
+                  backgroundColor:"#8E2DE2",
                 }}
                 onClick={() => handlePageChange(item)}
               >
@@ -1272,9 +1273,7 @@ export default function JodiPannelResultSection() {
                     fontSize: "28px",
                   }}
                 >
-                  {isOlderThan12Hours(item.openNo[0]?.[2], item.name)
-                    ? "***-**-***"
-                    : displayResult}
+                  {displayResult}
                 </h5>
                 {/* Action Buttons (Edit / Set Live Time) */}
                 <div className="d-flex justify-content-center mt-0 gap-1">
@@ -1370,6 +1369,7 @@ export default function JodiPannelResultSection() {
                   textAlign: "center",
                   padding: "5px",
                   borderRadius: "15px",
+                  backgroundColor:"#8E2DE2",
                 }}
                 className="btn btn-sm btn-primary button-jodi-panel"
               >

@@ -5,7 +5,7 @@ export default function NoticeSection() {
   return (
     <div
       className="border m-1 border-white  text-center noticesection-home-main-container"
-      style={{ backgroundColor: "#ffcc99" }}
+      style={{ backgroundColor: "#c9f3f6" }}
     >
       <div
         className="notice-continer-heading"
