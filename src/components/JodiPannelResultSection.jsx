@@ -886,7 +886,7 @@ export default function JodiPannelResultSection() {
     const lastOpen = getLatestEntry(item.openNo);
     const lastClose = getLatestEntry(item.closeNo);
 
-    if (!lastOpen && !lastClose) return "***-**-***";
+    // if (!lastOpen && !lastClose) return "***-**-***";
 
     const openMain = lastOpen?.[0] || "";
     const openDigit = lastOpen?.[1] || "";
@@ -916,7 +916,7 @@ export default function JodiPannelResultSection() {
       return `${closeMain}-${closeDigit}`;
     }
 
-    return "***-**-***";
+    return `${openMain}-${openDigit}${closeDigit}-${closeMain}`;
   };
 
   // const canEditGame = (game, role, username) => {
