@@ -111,7 +111,7 @@ export default function UserPayments() {
 
   return (
     <>
-      <div style={{ backgroundColor: "#c9f3f6" }}> 
+      <div style={{ backgroundColor: "#ffcc99" }}> 
         <h1>Total Payment</h1>
         <ul>
           {filterGameOflogedUser?.map((game) => (
@@ -126,7 +126,7 @@ export default function UserPayments() {
         {/* 🔹 Users Section */}
         <div
           className="rounded-lg shadow "
-          style={{ backgroundColor: "#c9f3f6" }}
+          style={{ backgroundColor: "#ffcc99" }}
         >
           <h2 className="text-xl font-bold mb-4 text-gray-800">Select User</h2>
           {loading ? (
@@ -134,7 +134,7 @@ export default function UserPayments() {
           ) : (
             <select
               className="w-full border rounded-lg focus:ring-2 focus:ring-blue-400"
-              style={{ backgroundColor: "#c9f3f6" }}
+              style={{ backgroundColor: "#ffcc99" }}
               value={selectedUser?._id || ""}
               onChange={(e) => {
                 const user = users.find((u) => u._id === e.target.value);
@@ -155,7 +155,7 @@ export default function UserPayments() {
         {/* 🔹 Payment Section */}
         <div
           className=" border rounded-lg shadow "
-          style={{ backgroundColor: "#c9f3f6" }}
+          style={{ backgroundColor: "#ffcc99" }}
         >
           <h2 className="text-xl font-bold mb-4 text-gray-800">
             Payment Details
@@ -170,7 +170,7 @@ export default function UserPayments() {
             </label>
             <select
               className="w-full border rounded-lg p-3 focus:ring-2 focus:ring-blue-400"
-              style={{ backgroundColor: "#c9f3f6" }}
+              style={{ backgroundColor: "#ffcc99" }}
               value={selectedGame?._id || ""}
               onChange={(e) => {
                 const game = filteredGames.find(

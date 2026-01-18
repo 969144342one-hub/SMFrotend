@@ -264,7 +264,7 @@ function NotificationPage({ role, notificationMessage }) {
   // }, []);
 
   return (
-    <div style={{ minHeight: "10vh", backgroundColor: "#c9f3f6" }}>
+    <div style={{ minHeight: "10vh", backgroundColor: "#ffcc99" }}>
       <ScrollingNotification
         messages={scrollMessages}
         color="#f70019ff"

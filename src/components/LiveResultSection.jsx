@@ -182,7 +182,7 @@ const LiveResultSection = () => {
   return (
     <div
       className="border border-white m-1 p-1 Live-Result-section-main-container"
-      style={{ backgroundColor: "#ffcc99" }}
+      style={{ backgroundColor: "#c9f3f6" }}
     >
       <div
         className="text-white text-center py-1 mb-1 fw-bold Live-Result-Heading"

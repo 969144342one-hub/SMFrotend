@@ -124,7 +124,7 @@ const AllUsersPage = () => {
           <div
             key={u._id}
             className="rounded-lg p-4 shadow-sm" 
-            style={{ background: "#FFF4E6", border: "2px solid #c9f3f6" }}
+            style={{ background: "#FFF4E6", border: "2px solid #ffcc99" }}
 
           >
             {/* USER INFO */}

@@ -261,7 +261,7 @@ export default function JodiPannelResultSection() {
           status: "Active",
           nameColor: "#000000",
           resultColor: "#000000",
-          panelColor: "#c9f3f6",
+          panelColor: "#ffcc99",
           notificationColor: "#ff0000",
         });
         fetchGamesAgain();
@@ -1016,7 +1016,7 @@ export default function JodiPannelResultSection() {
   return (
     <div
       className=" border border-white p-0.5" // <--- 'm-1' and 'p-3' create space
-      style={{ backgroundColor: "#c9f3f6", width: "100%" }}
+      style={{ backgroundColor: "#ffcc99", width: "100%" }}
     >
       <div className="bg-pink m-1 p-2 jodi-panel-container-second">
         <h3>SABSE PAHILE OR SABSE SAHI FAST SATTA MATKA RESULT</h3>
