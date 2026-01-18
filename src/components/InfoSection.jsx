@@ -19,7 +19,7 @@ const InfoSection = () => {
   }
 
   return (
-    <div className="border border-white text-center p-3" style={{ backgroundColor: "#c9f3f6" }}>
+    <div className="border border-white text-center p-3" style={{ backgroundColor: "#ffcc99" }}>
       <h2 className="Heading-infosection">Satta Matka Aajj Tak Kalyan Matka Result</h2>
 
       {role === "Admin" && (
