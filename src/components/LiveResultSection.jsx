@@ -186,7 +186,7 @@ const LiveResultSection = () => {
     >
       <div
         className="text-white text-center py-1 mb-1 fw-bold Live-Result-Heading"
-        style={{ backgroundColor: "#ffcc99" }}
+        style={{ backgroundColor: "#ff00a1" }}
       >
         <h3 style={{ fontSize: "1.2rem", margin: 0 }}>💥LIVE RESULT💥</h3>
       </div>

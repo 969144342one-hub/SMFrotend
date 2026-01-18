@@ -98,7 +98,7 @@ const AllPageLink = (props) => {
                   cursor-pointer transition duration-150 ease-in-out
                   hover:bg-amber-300 active:bg-amber-400
                 "
-                style={{ backgroundColor: '#ffddaf', fontSize:"20px", fontWeight:"bold",  border: "2px solid pink"}}
+                style={{ backgroundColor: '#c9f3f6', fontSize:"20px", fontWeight:"bold",  border: "2px solid pink"}}
                 title={`View ${game.name} Chart`}
               > 
                 {game.name} Chart 

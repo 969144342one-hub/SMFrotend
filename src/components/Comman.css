@@ -62,7 +62,7 @@
   font-weight: bold;
   background-color: #ff5733;
   border: solid white 2px;
-  border-radius: 20px;
+  /* border-radius: 20px; */
 }
 .Live-Result-section-main-container{
   border: solid 1px red;
@@ -170,7 +170,7 @@
   margin: 10px 0;
   padding: 10px;
   border-radius: 6px;
-  background-color: #f4c392;
+  background-color: #c9f3f6;
 }
 
 .section.red {
@@ -864,10 +864,9 @@
 
 /* Full Header Box */
 .header-container {
-  background-color: #ffcc99;
+  background-color: #c9f3f6;
   padding: 12px 0;
   border: 2px solid #ffffff;
-  border-radius: 10px;
 }
 
 /* Inner layout */
@@ -946,11 +945,11 @@
 }
 
 .welcome-banner {
-  background-color: #ffcc99;
+  background-color: #c9f3f6;
   border: 2px solid white;
-  margin-top: 3px;
+  /* margin-top: 3px; */
   padding: 14px 10px;
-  border-radius: 10px;
+  /* border-radius: 10px; */
   text-align: center;
   display: flex;
   justify-content: space-around;

@@ -5,7 +5,7 @@ import "./Comman.css";
 const DpBossPage = () => {
 
   return (
-    <div className="dpboss-page" style={{ backgroundColor: "#ffcc99" }}>
+    <div className="dpboss-page" style={{ backgroundColor: "#c9f3f6" }}>
       {/* <div className="section red">
         <h2>Matka Jodi List</h2>
         <ul>
