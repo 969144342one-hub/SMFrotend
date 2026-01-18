@@ -15,7 +15,7 @@ const LuckyNumberSection = () => {
   return (
     <div
       className="m-1 border border-white p-2"
-      style={{ backgroundColor: "#c9f3f6" }}
+      style={{ backgroundColor: "#ffcc99" }}
     >
       <div
         className="text-center py-1 w-100 mb-1 today-lucuky-no"
