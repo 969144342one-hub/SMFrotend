@@ -170,7 +170,7 @@
   margin: 10px 0;
   padding: 10px;
   border-radius: 6px;
-  background-color: #c9f3f6;
+  background-color: #ffcc99;
 }
 
 .section.red {
@@ -864,7 +864,7 @@
 
 /* Full Header Box */
 .header-container {
-  background-color: #c9f3f6;
+  background-color: #ffcc99;
   padding: 12px 0;
   border: 2px solid #ffffff;
 }
@@ -945,7 +945,7 @@
 }
 
 .welcome-banner {
-  background-color: #c9f3f6;
+  background-color: #ffcc99;
   border: 2px solid white;
   /* margin-top: 3px; */
   padding: 14px 10px;
