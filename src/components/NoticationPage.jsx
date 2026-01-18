@@ -31,7 +31,7 @@ const ScrollingNotification = ({
         whiteSpace: "nowrap",
         width: "100%",
         position: "relative",
-        // border: "solid 1px red",
+        border: "solid 1px red",
       }}
     >
       <div
@@ -153,7 +153,7 @@ const AddNotificationModal = ({ onClose, onSave }) => {
                 width: "100%",
                 padding: "8px",
                 borderRadius: "4px",
-                // border: "1px solid #ccc",
+                border: "1px solid #ccc",
               }}
             />
           </div>
@@ -264,7 +264,7 @@ function NotificationPage({ role, notificationMessage }) {
   // }, []);
 
   return (
-    <div style={{ minHeight: "10vh", backgroundColor: "#c9f3f6" }}>
+    <div style={{ minHeight: "10vh", backgroundColor: "#ffcc99 }}>
       <ScrollingNotification
         messages={scrollMessages}
         color="#f70019ff"
