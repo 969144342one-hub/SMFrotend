@@ -31,7 +31,7 @@ const ScrollingNotification = ({
         whiteSpace: "nowrap",
         width: "100%",
         position: "relative",
-        // border: "solid 1px red",
+        border: "solid 1px red",
       }}
     >
       <div
