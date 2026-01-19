@@ -597,23 +597,6 @@ export default function JodiPannelResultSection() {
 
   if (loading) return <div>Loading games...</div>;
   if (error) return <div>Error: {error}</div>;
-
-  // const filteredAndSortedGames = games
-  //   .filter((item) => {
-  //     if (!item.startTime) return false; // skip if no startTime
-  //     const startDate = getStartTimeAsDate(item.startTime);
-  //     return startDate >= new Date(); // only future or ongoing
-  //   })
-  //   .sort((a, b) => {
-  //     const startA = getStartTimeAsDate(a.startTime);
-  //     const startB = getStartTimeAsDate(b.startTime);
-  //     return startA - startB; // ascending: closest time first
-  //   });
-  // const sortedGames = [...games].sort((a, b) => {
-  //   const diffA = Math.abs(getStartTimeAsDate(a.startTime) - new Date());
-  //   const diffB = Math.abs(getStartTimeAsDate(b.startTime) - new Date());
-  //   return diffA - diffB; // closest to now first
-  // });
   const sortedGames = [...games].sort((a, b) => {
     const diffA = getNearestGameTime(a);
     const diffB = getNearestGameTime(b);
@@ -1015,7 +998,7 @@ export default function JodiPannelResultSection() {
 
   return (
     <div
-      className=" border border-white p-0.5" // <--- 'm-1' and 'p-3' create space
+      className=" border border-white p-0.5" 
       style={{ backgroundColor: "#ffcc99", width: "100%" }}
     >
       <div className="bg-pink m-1 p-2 jodi-panel-container-second">
