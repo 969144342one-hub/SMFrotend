@@ -68,7 +68,7 @@
   border: solid 1px red;
 }
 .Live-result-item-main-container{
-  border: solid 2px rgb(255, 251, 0);
+  border: solid 2px rgb(14, 14, 13);
   padding: 10px;
   background-color: #c9f3f6;
 }
@@ -99,20 +99,20 @@
   font-weight: bold;
   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   font-style: italic;
-  font-size: 30px;
-  color: rgb(238, 255, 3);
+  font-size: 40px;
+  color: rgb(10, 10, 10);
 }
 
 .LiveResultItemHNumber{
   font-weight: bold;
   font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
   font-style: italic;
-  font-size: 30px;
-  color: rgb(255, 255, 255);
+  font-size: 50px;
+  color: rgb(252, 59, 59);
   
 }
 .live-times-value{
-  color: rgb(238, 255, 3);
+  color: rgb(2, 2, 2);
 }
 .jodi-panel-container-second{
   width: 100%;
@@ -612,7 +612,7 @@
 }
 
 .Live-Result-Heading {
-  font-size: 20px;
+  font-size: 160px;
   font-weight: bold;
   background-color: #ff5733;
   border: solid white 2px;
@@ -621,7 +621,7 @@
 
 .Live-Result-section-main-container,
 .Live-result-item-main-container {
-  border: solid 1px rgb(255, 217, 0);
+  border: solid 1px rgb(2, 2, 2);
 }
 
 
