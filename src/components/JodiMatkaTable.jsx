@@ -201,7 +201,7 @@ export default function MatkaTable({
                     className={shouldHighlight ? "red" : ""}
                     style={{ textAlign: "center", padding: "6px" }}
                   >
-                    <div style={{ fontSize: "45px", fontWeight: 700 }}>
+                    <div style={{ fontSize: "40px", fontWeight: 700 }}>
                       {cell.text || "-"}
                     </div>
                     {/* uncomment to debug date: <div style={{ fontSize: 10 }}>{cell.dateKey || ""}</div> */}
