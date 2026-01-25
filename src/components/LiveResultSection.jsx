@@ -32,7 +32,7 @@ const LiveResultSection = () => {
       weekday: "long",
     });
 
-    const allowedDays = WEEK_DAYS.slice(0, noOfDays);
+    const allowedDays = WEEK_DAYS.slice(0, noOfDays-1);
 
     return allowedDays.includes(today);
   }
