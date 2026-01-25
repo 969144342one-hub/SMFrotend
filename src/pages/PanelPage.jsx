@@ -113,20 +113,12 @@ const PanelPage = () => {
           {(() => {
             const today = new Date().toISOString().split("T")[0];
 
-            const todayOpen = singleGameData.openNo?.find(
-              (item) => item[2]?.split("T")[0] === today
-            );
+            const todayOpen = singleGameData.openNo[0][0]
 
-            const todayClose = singleGameData.closeNo?.find(
-              (item) => item[2]?.split("T")[0] === today
-            );
-
-            return todayOpen && todayClose
-              ? todayOpen.slice(0, 2).join("-") +
-                  todayClose[1] +
-                  "-" +
-                  todayClose[0]
-              : "N/A";
+            const todayClose = singleGameData.closeNo[0][0]
+            console.log(todayOpen,todayClose);
+            
+            return `${todayOpen}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${todayClose}`
           })()}
         </h3>
       </div>
@@ -145,20 +137,11 @@ const PanelPage = () => {
           {(() => {
             const today = new Date().toISOString().split("T")[0];
 
-            const todayOpen = singleGameData.openNo?.find(
-              (item) => item[2]?.split("T")[0] === today
-            );
+            const todayOpen = singleGameData.openNo[0][0]
 
-            const todayClose = singleGameData.closeNo?.find(
-              (item) => item[2]?.split("T")[0] === today
-            );
+            const todayClose = singleGameData.closeNo[0][0]
 
-            return todayOpen && todayClose
-              ? todayOpen.slice(0, 2).join("-") +
-                  todayClose[1] +
-                  "-" +
-                  todayClose[0]
-              : "N/A";
+            return`${todayOpen}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${todayClose}`;
           })()}
         </h3>
       </div>
