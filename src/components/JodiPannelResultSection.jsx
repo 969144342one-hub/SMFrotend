@@ -1253,7 +1253,7 @@ export default function JodiPannelResultSection() {
                     color: item.resultColor || "#000000",
                     padding: "0px",
                     textShadow: "2px 2px 5px rgba(0, 0, 0, 0.3)",
-                    fontSize: "28px",
+                    fontSize: "45px",
                   }}
                 >
                   {displayResult}
