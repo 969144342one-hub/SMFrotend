@@ -62,7 +62,7 @@ const AddNotificationModal = ({ onClose, onSave }) => {
   const [formData, setFormData] = useState({ name: "", index: "1" });
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
-  const INDEX_OPTIONS = ["1", "2", "3", "4"];
+  const INDEX_OPTIONS = ["1", "2", "3", "4", "5"];
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -211,7 +211,7 @@ const AddNotificationModal = ({ onClose, onSave }) => {
 };
 
 // --- Main Notification Page ---
-function NotificationPage({ role, notificationMessage }) {
+function NotificationPage({ role, notificationMessage, messagefor5 }) {
   
   
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -265,11 +265,16 @@ function NotificationPage({ role, notificationMessage }) {
 
   return (
     <div style={{ minHeight: "10vh", backgroundColor: "#ffcc99" }}>
-      <ScrollingNotification
+      {
+       messagefor5==="5"?
+       <h1>{scrollMessages}</h1>
+       :
+        <ScrollingNotification
         messages={scrollMessages}
         color="#f70019ff"
         speed={15}
-      />
+        />
+      }
 
       {role === "Admin" && (
         <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>

@@ -171,6 +171,11 @@ const HomePage = ({ setGameTitle }) => {
         )}
 
         <InfoSection />
+        <NotificationPage
+          role={role}
+          messagefor5="5"
+          notificationMessage={responseNotification?.[4] || {}}
+        />
         {role === "Admin" && <ApiPoller />}
         <NotificationPage
           role={role}
