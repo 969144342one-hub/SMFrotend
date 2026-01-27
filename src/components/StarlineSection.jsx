@@ -2,7 +2,8 @@
 import React from "react";
 import StarlineTable from "./StarlineTable";
 
-const StarlineSection = () => {
+const StarlineSection = ({notificationMessage}) => {
+  
   const mainStarlineRows = [
     { leftTime: "09:05 AM", leftResult: "250-7", rightTime: "03:05 PM", rightResult: "" },
     { leftTime: "10:05 AM", leftResult: "380-1", rightTime: "04:05 PM", rightResult: "" },
@@ -22,9 +23,10 @@ const StarlineSection = () => {
   ];
 
   return (
-    <div className="container">
-      <StarlineTable title="MAIN STARLINE" color="#FFD700" rows={mainStarlineRows} />
-      <StarlineTable title="Mumbai Rajshree Star Line Result" color="#ff1493" rows={mumbaiStarlineRows} />
+    <div className="container" >
+      <h5 style={{"color":"white"}}>{notificationMessage?.name }</h5>
+      {/* <StarlineTable title="MAIN STARLINE" color="#FFD700" rows={mainStarlineRows} />
+      <StarlineTable title="Mumbai Rajshree Star Line Result" color="#ff1493" rows={mumbaiStarlineRows} /> */}
     </div>
   );
 };

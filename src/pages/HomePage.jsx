@@ -171,11 +171,7 @@ const HomePage = ({ setGameTitle }) => {
         )}
 
         <InfoSection />
-        <NotificationPage
-          role={role}
-          messagefor5="5"
-          notificationMessage={responseNotification?.[4] || {}}
-        />
+        
         {role === "Admin" && <ApiPoller />}
         <NotificationPage
           role={role}
@@ -194,7 +190,14 @@ const HomePage = ({ setGameTitle }) => {
           role={role}
           notificationMessage={responseNotification?.[2] || {}}
         />
-        <StarlStarlineSectionineTable />
+        <StarlStarlineSectionineTable role={role}
+          messagefor5="5"
+          notificationMessage={responseNotification?.[4] || {}}/>
+        {/* <NotificationPage
+          role={role}
+          messagefor5="5"
+          notificationMessage={responseNotification?.[4] || {}}
+        /> */}
         {/* <MainBombay36Bazar /> */}
         <AllPageLink page={"JodiPanPage"} />
         <AllPageLink page={"PanelPage"} />

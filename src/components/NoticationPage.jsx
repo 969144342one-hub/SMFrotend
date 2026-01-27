@@ -267,7 +267,7 @@ function NotificationPage({ role, notificationMessage, messagefor5 }) {
     <div style={{ minHeight: "10vh", backgroundColor: "#ffcc99" }}>
       {
        messagefor5==="5"?
-       <h1>{scrollMessages}</h1>
+       <h4>{scrollMessages}</h4>
        :
         <ScrollingNotification
         messages={scrollMessages}
