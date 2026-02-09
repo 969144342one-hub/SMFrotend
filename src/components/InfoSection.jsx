@@ -27,8 +27,9 @@ const InfoSection = () => {
           Update User Password
         </button>
       )}
+
       {role === "Admin" && (
-        <button className="btn btn-info" onClick={() => navigate("/allDetils")}>
+        <button className="btn btn-info" style={{margin:"10px"}} onClick={() => navigate("/allDetils")}>
           Check the game status
         </button>
       )}
