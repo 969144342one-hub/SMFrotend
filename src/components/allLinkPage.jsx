@@ -26,7 +26,7 @@ const AllPageLink = (props) => {
 
   const fetchGamesAgain = async () => {
     try {
-      const data = await api("/AllGames/");
+      const data = await api("/AllGames/FilterJodiChart");
       // ✅ This checks if data was successful and contains an array of games
       if (data.success && Array.isArray(data.data)) {
         setGames(data.data); // ✅ Setting the state with API data
