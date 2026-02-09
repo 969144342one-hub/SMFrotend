@@ -42,138 +42,168 @@ const AllGamesDetails = () => {
     g.name?.toLowerCase().includes(searchText.toLowerCase()),
   );
   const tdStyle = {
-  border: "1px solid #ccc",
-  padding: "8px",
-  verticalAlign: "top",
-  whiteSpace: "nowrap",
-};
-
+    border: "1px solid #ccc",
+    padding: "8px",
+    verticalAlign: "top",
+  };
 
   if (loading)
     return <div className="p-6 text-center font-semibold">Loading...</div>;
 
- return (
-  <div
-    style={{
-      minHeight: "100vh",
-      backgroundColor: "#fc9",
-      display: "flex",
-      justifyContent: "center",
-      padding: "20px",
-      boxSizing: "border-box",
-    }}
-  >
-    {/* MAIN CONTAINER */}
+  return (
     <div
       style={{
-        width: "100%",
-        maxWidth: "1200px",
-        backgroundColor: "#fff",
+        minHeight: "100vh",
+        backgroundColor: "#fc9",
+        display: "flex",
+        justifyContent: "center",
         padding: "20px",
-        borderRadius: "8px",
-        boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+        boxSizing: "border-box",
       }}
     >
-      <Header />
-
-      <h2
+      {/* MAIN CONTAINER */}
+      <div
         style={{
-          textAlign: "center",
-          marginBottom: "16px",
-          fontSize: "22px",
-          fontWeight: "bold",
+          width: "100%",
+          maxWidth: "1200px",
+          backgroundColor: "#fff",
+          padding: "20px",
+          borderRadius: "8px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
         }}
       >
-        All Games 🎮
-      </h2>
+        <Header />
 
-      {/* SEARCH */}
-      <div style={{ display: "flex", justifyContent: "center", marginBottom: 16 }}>
-        <input
-          placeholder="Search game..."
-          value={searchText}
-          onChange={(e) => setSearchText(e.target.value)}
+        <h2
           style={{
-            width: "60%",
-            minWidth: "250px",
-            padding: "8px",
-            borderRadius: "4px",
-            border: "1px solid #ccc",
-          }}
-        />
-      </div>
-
-      {/* TABLE */}
-      <div style={{ overflowX: "auto" }}>
-        <table
-          style={{
-            width: "100%",
-            borderCollapse: "collapse",
-            fontSize: "14px",
+            textAlign: "center",
+            marginBottom: "16px",
+            fontSize: "22px",
+            fontWeight: "bold",
           }}
         >
-          <thead>
-            <tr style={{ backgroundColor: "#fde68a" }}>
-              {[
-                "Name",
-                "Owner",
-                "Start",
-                "End",
-                "Live",
-                "Status",
-                "Notify",
-                "Font",
-                "Colors",
-              ].map((h) => (
-                <th
-                  key={h}
-                  style={{
-                    border: "1px solid #ccc",
-                    padding: "8px",
-                    textAlign: "left",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {h}
-                </th>
-              ))}
-            </tr>
-          </thead>
+          All Games 🎮
+        </h2>
 
-          <tbody>
-            {filteredGames.map((g) => (
-              <tr key={g._id} style={{ backgroundColor: "#fff" }}>
-                <td style={tdStyle}><b>{g.name}</b></td>
-                <td style={tdStyle}>{g.owner}</td>
-                <td style={tdStyle}>{g.startTime}</td>
-                <td style={tdStyle}>{g.endTime}</td>
-                <td style={tdStyle}>{g.liveTime}</td>
-                <td style={tdStyle}>{g.status}</td>
+        {/* SEARCH */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: 16,
+          }}
+        >
+          <input
+            placeholder="Search game..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            style={{
+              width: "60%",
+              minWidth: "250px",
+              padding: "8px",
+              borderRadius: "4px",
+              border: "1px solid #ccc",
+            }}
+          />
+        </div>
 
-                {/* NOTIFICATION */}
-                <td style={tdStyle}>
-                  <span
+        {/* TABLE */}
+        <div style={{ overflowX: "auto" }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              fontSize: "14px",
+              tableLayout: "fixed",
+            }}
+          >
+            <thead>
+              <tr style={{ backgroundColor: "#fde68a" }}>
+                {[
+                  "Name",
+                  "Owner",
+                  "Start",
+                  "End",
+                  "Live",
+                  "Status",
+                  "Notify",
+                  "Font",
+                  "Colors",
+                ].map((h) => (
+                  <th
+                    key={h}
                     style={{
-                      padding: "4px 8px",
-                      borderRadius: "4px",
-                      backgroundColor:
-                        g.IsNotification === "Yes" ? "#fde047" : "#86efac",
-                      fontSize: "12px",
-                      fontWeight: "600",
+                      border: "1px solid #ccc",
+                      padding: "8px",
+                      textAlign: "left",
+                      whiteSpace: "nowrap",
                     }}
                   >
-                    {g.IsNotification}
-                  </span>
-                </td>
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
 
-                <td style={tdStyle}>{g.fontSize}px</td>
+            <tbody>
+              {filteredGames.map((g) => (
+                <tr key={g._id} style={{ backgroundColor: "#fff" }}>
+                  <td
+                    style={{
+                      ...tdStyle,
+                      maxWidth: "180px",
+                      wordWrap: "break-word",
+                    }}
+                  >
+                    <b>{g.name}</b>
+                  </td>
+                  <td style={tdStyle}>{g.owner}</td>
+                  <td style={tdStyle}>{g.startTime}</td>
+                  <td style={tdStyle}>{g.endTime}</td>
+                  <td style={tdStyle}>{g.liveTime}</td>
+                  <td style={tdStyle}>{g.status}</td>
 
-                {/* COLORS */}
-                <td style={tdStyle}>
-                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                    {[g.nameColor, g.resultColor, g.panelColor, g.notificationColor].map(
-                      (c, i) => (
-                        <div key={i} style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                  {/* NOTIFICATION */}
+                  <td style={tdStyle}>
+                    <span
+                      style={{
+                        padding: "4px 8px",
+                        borderRadius: "4px",
+                        backgroundColor:
+                          g.IsNotification === "Yes" ? "#fde047" : "#86efac",
+                        fontSize: "12px",
+                        fontWeight: "600",
+                      }}
+                    >
+                      {g.IsNotification}
+                    </span>
+                  </td>
+
+                  <td style={tdStyle}>{g.fontSize}px</td>
+
+                  {/* COLORS */}
+                  <td style={tdStyle}>
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "6px",
+                      }}
+                    >
+                      {[
+                        g.nameColor,
+                        g.resultColor,
+                        g.panelColor,
+                        g.notificationColor,
+                      ].map((c, i) => (
+                        <div
+                          key={i}
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                          }}
+                        >
                           <span
                             style={{
                               width: "20px",
@@ -185,19 +215,17 @@ const AllGamesDetails = () => {
                           />
                           <span style={{ fontSize: "12px" }}>{c}</span>
                         </div>
-                      )
-                    )}
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+                      ))}
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-  </div>
-);
-
+  );
 };
 
 export default AllGamesDetails;
