@@ -3,6 +3,7 @@ import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import JodiPanPage from "./pages/JodiPanPage";
 import AllUsersPage from "./pages/AllUsers";
+import AllGamesDetils from './pages/AllGamesDetils'
 import PanelPage from "./pages/PanelPage";
 import SessionWrapper from "./SessionWrapper";
 import AdminRoute from "./AdminRoute";
@@ -30,6 +31,10 @@ export default function App() {
           <Route
             path="/allUser"
             element={ <AllUsersPage/>}
+          />
+          <Route
+            path="/allDetils"
+            element={ <AllGamesDetils/>}
           />
 
           {/* Catch-all → redirect unknown routes */}
