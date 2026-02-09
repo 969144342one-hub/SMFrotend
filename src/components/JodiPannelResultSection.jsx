@@ -107,6 +107,7 @@ export default function JodiPannelResultSection() {
     resultColor: "#000000", // default black
     panelColor: "#ffcb99", // default white
     notificationColor: "#ff0000", // default red
+    IsNotification: "No",
   });
 
   const [newAgent, setNewAgent] = useState({
@@ -130,8 +131,10 @@ export default function JodiPannelResultSection() {
     panelColor: "",
     notificationColor: "",
     status: "Active",
+    IsNotification:"No"
   });
 
+  const [isNotificationArray, setIsNotificationArray] = useState(["Yes", "No"])
   const [deleteGameName, setDeleteGameName] = useState("");
   const [linkForUpdateGame, setLinkForUpdateGame] = useState("");
   const [selectedStatus, setSelectedStatus] = useState();
@@ -171,7 +174,7 @@ export default function JodiPannelResultSection() {
     // Confirmation
     if (
       !window.confirm(
-        `Delete ${deleteType} records for ${deleteDate}? This action cannot be undone.`
+        `Delete ${deleteType} records for ${deleteDate}? This action cannot be undone.`,
       )
     ) {
       return;
@@ -307,7 +310,7 @@ export default function JodiPannelResultSection() {
         const errorData = await err.response.json();
 
         toast.error(
-          errorData.message || errorData.error || "Something went wrong!"
+          errorData.message || errorData.error || "Something went wrong!",
         );
       } else {
         console.log("ig");
@@ -473,6 +476,9 @@ export default function JodiPannelResultSection() {
 
   const handleSetActiveInactive = async (e, gameId, newStatus) => {
     e.preventDefault();
+    const isConfirm = window.confirm("Are you sure that You want to change the state")
+
+    if(!isConfirm) return 
     try {
       await api(`/AllGames/updateStatus/${gameId}`, {
         method: "PUT",
@@ -567,6 +573,8 @@ export default function JodiPannelResultSection() {
       panelColor: g.panelColor || "#ffffff",
       notificationColor: g.notificationColor || "#ff0000",
       status: g.status,
+      IsNotification:g.IsNotification,
+      noOfDays:g.noOfDays,  
     });
   };
 
@@ -784,7 +792,7 @@ export default function JodiPannelResultSection() {
 
         if (!(firstDigit <= secondDigit && secondDigit <= thirdDigit)) {
           toast.error(
-            "Invalid number Please check or contact operator : First < Second < Third"
+            "Invalid number Please check or contact operator : First < Second < Third",
           );
           return;
         }
@@ -800,7 +808,7 @@ export default function JodiPannelResultSection() {
           parseInt(providedCheckDigit, 10) !== expectedCheckDigit
         ) {
           toast.error(
-            `Invalid number: check digit should be ${expectedCheckDigit} (sum of last 3 digits).`
+            `Invalid number: check digit should be ${expectedCheckDigit} (sum of last 3 digits).`,
           );
           return;
         }
@@ -841,9 +849,10 @@ export default function JodiPannelResultSection() {
       now.getDate(),
       hours,
       minutes,
-      0
+      0,
     );
   }
+
 
   function isOlderThan12Hours(dateString) {
     // console.log(dateString,name);
@@ -998,7 +1007,7 @@ export default function JodiPannelResultSection() {
 
   return (
     <div
-      className=" border border-white p-0.5" 
+      className=" border border-white p-0.5"
       style={{ backgroundColor: "#ffcc99", width: "100%" }}
     >
       <div className="bg-pink m-1 p-2 jodi-panel-container-second">
@@ -1040,6 +1049,7 @@ export default function JodiPannelResultSection() {
                 panelColor: "",
                 notificationColor: "",
                 status: "Active",
+                IsNotification:"No"
               });
 
               setShowModal(true);
@@ -1126,7 +1136,7 @@ export default function JodiPannelResultSection() {
 
           const getDisplayResultOrLoading = (item) => {
             const now = new Date();
-
+            
             // Parse startTime in "HH:mm" format
             let startTime = null;
             if (item.startTime) {
@@ -1137,7 +1147,7 @@ export default function JodiPannelResultSection() {
                 now.getDate(),
                 hours,
                 minutes,
-                0
+                0,
               );
             }
 
@@ -1147,11 +1157,11 @@ export default function JodiPannelResultSection() {
             }
 
             const tenMinutesBeforeStart = new Date(
-              startTime.getTime() - 10 * 60 * 1000
+              startTime.getTime() - 10 * 60 * 1000,
             );
 
             // Show loading if current time is before startTime - 10min OR result not available
-            if (now >= tenMinutesBeforeStart && now <= startTime) {
+            if (now >= tenMinutesBeforeStart && now <= startTime && item?.IsNotification !== "Yes") {
               return <p style={{ color: "#ff0000" }}>Loading...</p>;
             }
 
@@ -1190,7 +1200,7 @@ export default function JodiPannelResultSection() {
                   textAlign: "center",
                   padding: "5px",
                   borderRadius: "15px",
-                  backgroundColor:"#8E2DE2",
+                  backgroundColor: "#8E2DE2",
                 }}
                 onClick={() => handlePageChange(item)}
               >
@@ -1266,7 +1276,7 @@ export default function JodiPannelResultSection() {
                     hidden={
                       !(
                         role === "Admin" ||
-                        (role === "Agent" && item.owner === username)
+                        (role === "Agent" && item.owner === username )
                       )
                     }
                     disabled={new Date(item.valid_date).getTime() < Date.now()}
@@ -1282,7 +1292,7 @@ export default function JodiPannelResultSection() {
                       handleSetActiveInactive(
                         e,
                         item._id,
-                        item.status === "Active" ? "InActive" : "Active"
+                        item.status === "Active" ? "InActive" : "Active",
                       );
                       // setModalType("Set Active Inactive");
                       // setShowModal(true);
@@ -1352,7 +1362,7 @@ export default function JodiPannelResultSection() {
                   textAlign: "center",
                   padding: "5px",
                   borderRadius: "15px",
-                  backgroundColor:"#8E2DE2",
+                  backgroundColor: "#8E2DE2",
                 }}
                 className="btn btn-sm btn-primary button-jodi-panel"
               >
@@ -1410,6 +1420,24 @@ export default function JodiPannelResultSection() {
                 >
                   <option value="">-- No Of Days --</option>
                   {DatesForTheGame.map((agent, id) => (
+                    <option key={id} value={agent}>
+                      {agent}
+                    </option>
+                  ))}
+                </select>
+
+                <label>Is Notification </label>
+                <select
+                  name="IsNotification"
+                  value={newGame.IsNotification}
+                  onChange={(e) =>
+                    setNewGame({ ...newGame, IsNotification: e.target.value })
+                  }
+                  required
+                  className="form-control"
+                >
+                  <option value="">Is Notification Or Game</option>
+                  {isNotificationArray.map((agent, id) => (
                     <option key={id} value={agent}>
                       {agent}
                     </option>
@@ -1751,6 +1779,26 @@ export default function JodiPannelResultSection() {
                       ))}
                     </select>
 
+                    <label>Is Notification </label>
+                    <select
+                      name="IsNotification"
+                      value={editFullGame.IsNotification}
+                      onChange={(e) =>
+                        setEditFullGame({
+                          ...editFullGame,
+                          IsNotification: e.target.value,
+                        })
+                      }
+                      className="form-control"
+                    >
+                      <option value="">Is Notification Or Game</option>
+                      {isNotificationArray.map((agent, id) => (
+                        <option key={id} value={agent}>
+                          {agent}
+                        </option>
+                      ))}
+                    </select>
+
                     <label>Start Time</label>
                     <input
                       type="time"
@@ -2064,7 +2112,7 @@ export default function JodiPannelResultSection() {
                       {
                         method: "PUT",
                         body: JSON.stringify({ liveTime: selectedTime }),
-                      }
+                      },
                     );
                     if (response.success) {
                       toast.success("Live time set successfully!");
