@@ -67,11 +67,28 @@
 .Live-Result-section-main-container{
   border: solid 1px red;
 }
-.Live-result-item-main-container{
+.Live-result-item-main-container {
   border: solid 2px rgb(14, 14, 13);
   padding: 10px;
   background-color: #c9f3f6;
+  width: 100%;
+  margin: 0 auto;   /* center horizontally */
 }
+
+/* Tablet */
+@media (min-width: 768px) {
+  .Live-result-item-main-container {
+    width: 75%;
+  }
+}
+
+/* Laptop / Desktop */
+@media (min-width: 992px) {
+  .Live-result-item-main-container {
+    width: 50%;
+  }
+}
+
 
 .lucky-number-section-heading{
   font: bold;
@@ -113,6 +130,7 @@
 }
 .live-times-value{
   color: rgb(2, 2, 2);
+  /* margin-left: 100px; */
 }
 .jodi-panel-container-second{
   width: 100%;
@@ -838,6 +856,8 @@
   font-size: 16px;
   font-weight: bold;
   margin-top: 6px;
+  width: 60%;
+  margin-left: 20%;
 }
 
 .dpboss-logo {

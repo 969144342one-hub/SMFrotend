@@ -131,10 +131,10 @@ export default function JodiPannelResultSection() {
     panelColor: "",
     notificationColor: "",
     status: "Active",
-    IsNotification:"No"
+    IsNotification: "No",
   });
 
-  const [isNotificationArray, setIsNotificationArray] = useState(["Yes", "No"])
+  const [isNotificationArray, setIsNotificationArray] = useState(["Yes", "No"]);
   const [deleteGameName, setDeleteGameName] = useState("");
   const [linkForUpdateGame, setLinkForUpdateGame] = useState("");
   const [selectedStatus, setSelectedStatus] = useState();
@@ -476,9 +476,11 @@ export default function JodiPannelResultSection() {
 
   const handleSetActiveInactive = async (e, gameId, newStatus) => {
     e.preventDefault();
-    const isConfirm = window.confirm("Are you sure that You want to change the state")
+    const isConfirm = window.confirm(
+      "Are you sure that You want to change the state",
+    );
 
-    if(!isConfirm) return 
+    if (!isConfirm) return;
     try {
       await api(`/AllGames/updateStatus/${gameId}`, {
         method: "PUT",
@@ -573,8 +575,8 @@ export default function JodiPannelResultSection() {
       panelColor: g.panelColor || "#ffffff",
       notificationColor: g.notificationColor || "#ff0000",
       status: g.status,
-      IsNotification:g.IsNotification,
-      noOfDays:g.noOfDays,  
+      IsNotification: g.IsNotification,
+      noOfDays: g.noOfDays,
     });
   };
 
@@ -853,7 +855,6 @@ export default function JodiPannelResultSection() {
     );
   }
 
-
   function isOlderThan12Hours(dateString) {
     // console.log(dateString,name);
 
@@ -1049,7 +1050,7 @@ export default function JodiPannelResultSection() {
                 panelColor: "",
                 notificationColor: "",
                 status: "Active",
-                IsNotification:"No"
+                IsNotification: "No",
               });
 
               setShowModal(true);
@@ -1136,7 +1137,7 @@ export default function JodiPannelResultSection() {
 
           const getDisplayResultOrLoading = (item) => {
             const now = new Date();
-            
+
             // Parse startTime in "HH:mm" format
             let startTime = null;
             if (item.startTime) {
@@ -1161,7 +1162,11 @@ export default function JodiPannelResultSection() {
             );
 
             // Show loading if current time is before startTime - 10min OR result not available
-            if (now >= tenMinutesBeforeStart && now <= startTime && item?.IsNotification !== "Yes") {
+            if (
+              now >= tenMinutesBeforeStart &&
+              now <= startTime &&
+              item?.IsNotification !== "Yes"
+            ) {
               return <p style={{ color: "#ff0000" }}>Loading...</p>;
             }
 
@@ -1190,22 +1195,26 @@ export default function JodiPannelResultSection() {
               style={{ backgroundColor: item.panelColor || "" }}
             >
               {/* Top Record button */}
-              <button
-                className="btn btn-sm btn-primary button-jodi-panel"
-                style={{
-                  height: "125px",
-                  width: "30px",
-                  writingMode: "vertical-rl",
-                  textOrientation: "upright",
-                  textAlign: "center",
-                  padding: "5px",
-                  borderRadius: "15px",
-                  backgroundColor: "#8E2DE2",
-                }}
-                onClick={() => handlePageChange(item)}
-              >
-                Record
-              </button>
+              {item.IsNotification ? (
+                <div></div>
+              ) : (
+                <button
+                  className="btn btn-sm btn-primary button-jodi-panel"
+                  style={{
+                    height: "125px",
+                    width: "30px",
+                    writingMode: "vertical-rl",
+                    textOrientation: "upright",
+                    textAlign: "center",
+                    padding: "5px",
+                    borderRadius: "15px",
+                    backgroundColor: "#8E2DE2",
+                  }}
+                  onClick={() => handlePageChange(item)}
+                >
+                  Record
+                </button>
+              )}
 
               <div style={{ width: "70%", maxWidth: "80%" }}>
                 <div>
@@ -1258,16 +1267,20 @@ export default function JodiPannelResultSection() {
                 </div>
 
                 {/* ✅ Result or Loading */}
-                <h5
-                  style={{
-                    color: item.resultColor || "#000000",
-                    padding: "0px",
-                    textShadow: "2px 2px 5px rgba(0, 0, 0, 0.3)",
-                    fontSize: "40px",
-                  }}
-                >
-                  {displayResult}
-                </h5>
+                {item.IsNotification ? (
+                  <></>
+                ) : (
+                  <h5
+                    style={{
+                      color: item.resultColor || "#000000",
+                      padding: "0px",
+                      textShadow: "2px 2px 5px rgba(0, 0, 0, 0.3)",
+                      fontSize: "40px",
+                    }}
+                  >
+                    {displayResult}
+                  </h5>
+                )}
                 {/* Action Buttons (Edit / Set Live Time) */}
                 <div className="d-flex justify-content-center mt-0 gap-1">
                   <button
@@ -1276,7 +1289,7 @@ export default function JodiPannelResultSection() {
                     hidden={
                       !(
                         role === "Admin" ||
-                        (role === "Agent" && item.owner === username )
+                        (role === "Agent" && item.owner === username)
                       )
                     }
                     disabled={new Date(item.valid_date).getTime() < Date.now()}
@@ -1310,14 +1323,18 @@ export default function JodiPannelResultSection() {
 
                 {/* Game timing info */}
                 <div className="timeStamp-for-jodi-panel">
-                  <p
-                    style={{
-                      color: item.nameColor || "#000000",
-                      marginRight: "15px",
-                    }}
-                  >
-                    {item.startTime}
-                  </p>
+                  {item.IsNotification ? (
+                    <></>
+                  ) : (
+                    <p
+                      style={{
+                        color: item.nameColor || "#000000",
+                        marginRight: "15px",
+                      }}
+                    >
+                      {item.startTime}
+                    </p>
+                  )}
                   {role === "Admin" && (
                     <p
                       style={{
@@ -1328,15 +1345,18 @@ export default function JodiPannelResultSection() {
                       {item.liveTime}
                     </p>
                   )}
-
-                  <p
-                    style={{
-                      color: item.nameColor || "#000000",
-                      marginLeft: "15px",
-                    }}
-                  >
-                    {item.endTime}
-                  </p>
+                  {item.IsNotification ? (
+                    <></>
+                  ) : (
+                    <p
+                      style={{
+                        color: item.nameColor || "#000000",
+                        marginLeft: "15px",
+                      }}
+                    >
+                      {item.endTime}
+                    </p>
+                  )}
                 </div>
                 <div style={{ maxWidth: "100%", width: "100%" }}>
                   {Array.isArray(item.Notification_Message) &&
@@ -1352,22 +1372,26 @@ export default function JodiPannelResultSection() {
               </div>
 
               {/* Bottom Record button */}
-              <button
-                onClick={() => handlePageChange(item, "panel")}
-                style={{
-                  height: "125px",
-                  width: "30px",
-                  writingMode: "vertical-rl",
-                  textOrientation: "upright",
-                  textAlign: "center",
-                  padding: "5px",
-                  borderRadius: "15px",
-                  backgroundColor: "#8E2DE2",
-                }}
-                className="btn btn-sm btn-primary button-jodi-panel"
-              >
-                Record
-              </button>
+              {item.IsNotification ? (
+                <div></div>
+              ) : (
+                <button
+                  onClick={() => handlePageChange(item, "panel")}
+                  style={{
+                    height: "125px",
+                    width: "30px",
+                    writingMode: "vertical-rl",
+                    textOrientation: "upright",
+                    textAlign: "center",
+                    padding: "5px",
+                    borderRadius: "15px",
+                    backgroundColor: "#8E2DE2",
+                  }}
+                  className="btn btn-sm btn-primary button-jodi-panel"
+                >
+                  Record
+                </button>
+              )}
             </div>
           );
         })}
