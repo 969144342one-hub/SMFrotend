@@ -24,8 +24,8 @@ const Header = () => {
         
         {/* Branding */}
         <div className="logo-block" onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
-          <span className="logo-dp">Satta</span>
-          <span className="logo-rest">Matka Aajj Tak</span>
+          <span className="logo-dp">Satta Matka Aajj Tak</span>
+          {/* <span className="logo-dp">Matka Aajj Tak</span> */}
         </div>
 
         {/* Right Section */}

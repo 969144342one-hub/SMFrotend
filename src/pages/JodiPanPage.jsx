@@ -170,19 +170,19 @@ const JodiPanPage = () => {
   const description = `Dpboss ${singleGameData.name} jodi chart, ${singleGameData.name} jodi chart, old ${singleGameData.name} jodi chart, dpboss ${singleGameData.name} chart, ${singleGameData.name} jodi record...`;
 
   return (
-    <div className="bg-danger border m-1 border-danger text-center ">
+    <div className="border m-1 border-danger text-center " style={{backgroundColor:"black"}}>
       <Header />
 
-      <div className="border m-1 border-danger text-center" style={{ background: "Pink" }}>
+      {/* <div className="border m-1 border-danger text-center" style={{ background: "Pink" }}>
         <h3>{singleGameData.name} JODI CHART</h3>
-      </div>
+      </div> */}
 
-      <div className="bg-warning m-1 border border-white py-3 text-center">
+      {/* <div className="bg-warning m-1 border border-white py-3 text-center">
         <p>{description}</p>
-      </div>
+      </div> */}
 
-      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "Pink" }}>
-        <h3>{singleGameData.name} JODI CHART</h3>
+      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "white" }}>
+        <h3>JODI CHART</h3>
       </div>
 
       {/* File Upload Section */}
@@ -204,7 +204,7 @@ const JodiPanPage = () => {
       )}
 
       {/* TOP Result */}
-      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "Pink" }}>
+      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "white" }}>
         <h3>{singleGameData.name}</h3>
         <h3>
           {singleGameData.openNo?.length > 0 && singleGameData.closeNo?.length > 0
@@ -217,9 +217,9 @@ const JodiPanPage = () => {
       <MatkaTable  groupedData={groupedByDay} groupedDataOpen={groupedByDay_Open} titleNameHeading={singleGameData.name} noOfDays={singleGameData.noOfDays} />
 
       {/* BOTTOM Result */}
-      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "Pink" }}>
+      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "white" }}>
         <h3>{singleGameData.name}</h3>
-        <h3>
+        <h3 >
           {singleGameData.openNo?.length > 0 && singleGameData.closeNo?.length > 0
             ? `${singleGameData.openNo[0][0]}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${singleGameData.closeNo[0][0]}`
             : "N/A"}

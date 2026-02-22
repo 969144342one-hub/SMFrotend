@@ -18,11 +18,11 @@
     font-weight: bold;
 
 }
-.Heading-infosection{
+/* .Heading-infosection{
   font-weight: bold;
   font-size: 20px;
   font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-}
+} */
 
 .Gloden-Ank-Description{
   color: rgb(0, 0, 41);
@@ -413,14 +413,14 @@
 .matka-table {
   border-collapse: collapse;
   margin: auto;
-  background-color: #f4b183;
+  background-color: black;
   font-family: Arial, sans-serif;
   text-align: center;
 }
 
 .matka-table th,
 .matka-table td {
-  border: 1px solid #000;
+  border: 1px solid white;
   padding: 8px;
 }
 
@@ -459,6 +459,7 @@
   display: flex;
   flex-direction: column;
   font-weight:100;
+  border: white;
   justify-content: center;
   align-items: center;
   line-height: 14px;
@@ -516,12 +517,12 @@
   overflow-x: auto;
 }
 
-.matka-table {
+/* .matka-table {
   width: 100%;
   border-collapse: collapse;
   font-family: Arial, sans-serif;
   font-size: 0.8rem;
-}
+} */
 
 .matka-table th, .matka-table td {
   border: 1px solid #ccc;
@@ -600,6 +601,7 @@
   font-weight: bold;
   font-size: 20px;
   font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+  border: "2px solid red";
 }
 
 .Gloden-Ank-Description {
@@ -676,15 +678,16 @@
 .matka-table {
   border-collapse: collapse;
   width: 100%;
-  background-color: #f4b183;
+  background-color: black;
   font-family: Arial, sans-serif;
   text-align: center;
+  border:white
 }
 
 /* Table Cells */
 .matka-table th,
 .matka-table td {
-  border: 1px solid black;
+  border: 1px solid rgb(253, 252, 252);
   padding: 4px 6px;
   text-align: center;
   vertical-align: middle !important;
@@ -884,9 +887,9 @@
 
 /* Full Header Box */
 .header-container {
-  background-color: #ffcc99;
+  background-color: #860002;
   padding: 12px 0;
-  border: 2px solid #ffffff;
+  border: 2px solid #860002;
 }
 
 /* Inner layout */
@@ -909,10 +912,17 @@
 /* Pink “Dp” — EXACT dpboss style */
 .logo-dp {
   font-family: "Brush Script MT", "Pacifico", cursive;
-  font-size: 2rem;
+  font-size: 30px;
   font-weight: 900;
-  color: #ff1e00;
-  margin-right: 6px;
+  color: #fffdfc;
+  margin-right: 15px;
+
+  /* Remove -webkit-text-stroke and use this: */
+  /* text-shadow: 
+    -2px -2px 0 yellow,  
+     2px -2px 0 yellow,
+    -2px  2px 0 yellow,
+     2px  2px 0 yellow; */
 }
 
 /* “BOSS Services” — clean bold black */
@@ -963,21 +973,27 @@
     gap: 8px;
   }
 }
+.header-welocme{
+  color: #860002;
+}
 
 .welcome-banner {
   background-color: #ffcc99;
-  border: 2px solid white;
+  border: 2px solid #ffcc99;
   /* margin-top: 3px; */
   padding: 14px 10px;
   /* border-radius: 10px; */
   text-align: center;
   display: flex;
-  justify-content: space-around;
+  flex-direction: column;
+  justify-content:center;
+  align-items: center;
 }
 
 /* Logo Styling */
 .banner-logo {
-  width: 150px;
+  width: 350px;
+  height: 350px;
   height: auto;
   margin-bottom: 10px;
   border-radius: 8px;
@@ -1018,4 +1034,74 @@
   .welcome-message {
     font-size: 0.95rem;
   }
+}
+
+.dpboss-page {
+  background-color: #f5c28b;
+  padding: 10px;
+  font-family: Arial, sans-serif;
+}
+
+/* ===== Top Header ===== */
+.top-header {
+  background-color: #eab676;
+  text-align: center;
+  padding: 8px;
+  border: 3px solid red;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ===== Notice Section ===== */
+.notice-section {
+  margin-top: 12px;
+  background-color: #f2c38b;
+  border: 3px solid red;
+  border-radius: 10px;
+  text-align: center;
+  padding: 15px;
+}
+
+.notice-title {
+  background-color: #b30000;
+  color: white;
+  font-weight: bold;
+  padding: 5px;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.notice-section .email {
+  color: #1a237e;
+  font-weight: bold;
+}
+
+/* ===== Red Info Section ===== */
+.red-info-section {
+  margin-top: 12px;
+  /* background-color: #b30000;
+  */
+  background-color: #f2c38b;
+  color: rgb(20, 20, 20);
+  border: 3px solid red;
+  border-radius: 10px;
+  text-align: center;
+  padding: 20px;
+  margin-bottom: 10px;
+}
+
+.red-info-section h4 {
+  margin: 5px 0;
+}
+
+.fastMatkaPlay{
+  font-size: 20px;
+  font-weight: bold;
+  height: 60px;
+  border-radius: 10px;
+  background-color: #003399;
+  color: white;
+  align-items: center;
 }

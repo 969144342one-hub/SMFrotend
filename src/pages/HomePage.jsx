@@ -28,7 +28,7 @@ const handleRefresh = () => {
 
 const handleCall = () => {
   // Opens dialer with number
-  window.location.href = "tel:+919691443421"; // ← replace with your number
+  window.location.href = "https://api.whatsapp.com/send/?phone=919203516304&text=Welcome%21+Please+message+us+or+call+on+919691443421&type=phone_number&app_absent=0"; // ← replace with your number
 };
 const StaticButtons = () => {
   // Use a React Portal to render the buttons outside the normal DOM hierarchy.
@@ -60,7 +60,7 @@ const StaticButtons = () => {
           fontSize: "12px",
         }}
       >
-        📞 Call Admin
+        📞 WhatApp Admin
       </button>
 
       {/* 🔄 Refresh Page Button */}
@@ -156,7 +156,7 @@ const HomePage = ({ setGameTitle }) => {
       {/* Existing Page Content */}
       <div
         className="border border-danger text-center col-12"
-        style={{ backgroundColor: "#ff2600ff", width: "100%" }}
+        style={{ backgroundColor: "#f2c38b", width: "100%" }}
       >
         {/* Page Sections */}
         <Header />
@@ -201,11 +201,11 @@ const HomePage = ({ setGameTitle }) => {
         {/* <MainBombay36Bazar /> */}
         <AllPageLink page={"JodiPanPage"} />
         <AllPageLink page={"PanelPage"} />
-        <DpBossPage />
         <NotificationPage
           role={role}
           notificationMessage={responseNotification?.[3] || {}}
         />
+        <DpBossPage />
       </div>
     </>
   );
