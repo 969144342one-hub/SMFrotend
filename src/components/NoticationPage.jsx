@@ -41,10 +41,11 @@ const ScrollingNotification = ({
           color,
           paddingLeft: "100%",
           animation: `scroll ${animationDuration}s linear infinite`,
+          height:"30px",
         }}
       >
-        <span style={{ paddingRight: "2rem" }}>{text}</span>
-        <span style={{ paddingRight: "2rem" }}>{text}</span>
+        <span style={{ paddingRight: "2rem",fontSize:"23px", fontWeight:"bold" }}>{text}</span>
+        <span style={{ paddingRight: "2rem",fontSize:"23px",fontWeight:"bold" }}>{text}</span>
       </div>
 
       <style>{`
@@ -118,6 +119,7 @@ const AddNotificationModal = ({ onClose, onSave }) => {
           width: "90%",
           maxWidth: "350px",
           boxShadow: "0 8px 16px rgba(0,0,0,0.2)",
+          
         }}
       >
         <h3
@@ -264,10 +266,11 @@ function NotificationPage({ role, notificationMessage, messagefor5 }) {
   // }, []);
 
   return (
-    <div style={{ minHeight: "10vh", backgroundColor: "#ffcc99" }}>
+    <div style={{ minHeight: "5vh", backgroundColor: "#f5f5f5", border:"solid 1px red" }}>
+      <>
       {
-       messagefor5==="5"?
-       <h4>{scrollMessages}</h4>
+        messagefor5==="5"?
+        <h1 style={{fontWeight:"600px"}}>{scrollMessages}</h1>
        :
         <ScrollingNotification
         messages={scrollMessages}
@@ -275,6 +278,7 @@ function NotificationPage({ role, notificationMessage, messagefor5 }) {
         speed={15}
         />
       }
+      </>
 
       {role === "Admin" && (
         <div style={{ padding: "20px", maxWidth: "1200px", margin: "0 auto" }}>

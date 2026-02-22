@@ -78,7 +78,7 @@ const AllPageLink = (props) => {
         {/* Header matching the Satta Matka style (Pink background) */}
         <div 
           className="bg-pink-600 text-white text-center py-3 font-extrabold text-xl sm:text-2xl tracking-wider"
-          style={{ backgroundColor: '#ff69b4',fontSize:"20px", fontWeight:"bold", width:"100%" }} // Use a brighter pink for the header
+          style={{ backgroundColor: '#092581',fontSize:"30px", fontWeight:"bold", width:"100%", color:"white" }} // Use a brighter pink for the header
         >
           {page === "JodiPanPage" ? "JODI CHART" : "PANEL CHART"}
         </div>
@@ -98,10 +98,10 @@ const AllPageLink = (props) => {
                   cursor-pointer transition duration-150 ease-in-out
                   hover:bg-amber-300 active:bg-amber-400
                 "
-                style={{ backgroundColor: '#ffcc99', fontSize:"20px", fontWeight:"bold",  border: "2px solid pink"}}
+                style={{ backgroundColor: '#ffcc99', fontSize:"20px", fontWeight:"bold",  border: "2px solid #092581" , color:"#092581"}}
                 title={`View ${game.name} Chart`}
               > 
-                {game.name} Chart 
+                {game.name}  
               </div>
             ))
           ) : (
