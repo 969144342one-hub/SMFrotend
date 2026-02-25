@@ -1187,7 +1187,6 @@ export default function JodiPannelResultSection() {
           };
 
           const displayResult = getDisplayResultOrLoading(item);
-
           return (
             <div
               className="jodi-panel-container jodi-panel-container-second p-1"
@@ -1195,7 +1194,7 @@ export default function JodiPannelResultSection() {
               style={{ backgroundColor: item.panelColor || "" }}
             >
               {/* Top Record button */}
-              {item.IsNotification ? (
+              {item.IsNotification === "Yes"  ? (
                 <div></div>
               ) : (
                 <button
@@ -1267,7 +1266,7 @@ export default function JodiPannelResultSection() {
                 </div>
 
                 {/* ✅ Result or Loading */}
-                {item.IsNotification ? (
+                {item.IsNotification === "Yes" ? (
                   <></>
                 ) : (
                   <h5
@@ -1323,7 +1322,7 @@ export default function JodiPannelResultSection() {
 
                 {/* Game timing info */}
                 <div className="timeStamp-for-jodi-panel">
-                  {item.IsNotification ? (
+                  {item.IsNotification === "Yes" ? (
                     <></>
                   ) : (
                     <p
@@ -1345,7 +1344,7 @@ export default function JodiPannelResultSection() {
                       {item.liveTime}
                     </p>
                   )}
-                  {item.IsNotification ? (
+                  {item.IsNotification === "Yes" ? (
                     <></>
                   ) : (
                     <p
@@ -1372,7 +1371,7 @@ export default function JodiPannelResultSection() {
               </div>
 
               {/* Bottom Record button */}
-              {item.IsNotification ? (
+              {item.IsNotification === "Yes" ? (
                 <div></div>
               ) : (
                 <button
