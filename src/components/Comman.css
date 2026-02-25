@@ -745,6 +745,7 @@
   justify-content: center;
   line-height: 14px;
   font-size: 16px;
+  color: white;
   font-weight: bold;
   width: 20px; 
 }
@@ -753,6 +754,7 @@
 .big-jodi {
   font-size: 22px;
   font-weight: bold;
+  color: white;
   min-width: 28px;
   text-align: center;
 }
@@ -785,6 +787,7 @@
   .small-panel {
     font-size: 14px;
     width: 16px;
+    color: whites;
     line-height: 12px;
   }
 
