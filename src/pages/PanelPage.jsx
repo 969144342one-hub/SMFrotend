@@ -1,3 +1,4 @@
+// src/pages/PanelPage.jsx
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import PanelMatkaTable from "../components/PanelMatkaTable";
@@ -5,16 +6,18 @@ import { useParams } from "react-router-dom";
 import { api } from "../lib/api";
 
 const PanelPage = () => {
-  const [singleGameData, setSingleGameData] = useState(null);
+  const [singleGameData, setSingleGameData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const { id } = useParams();
+
 
   const fetchSingleGameData = async () => {
     try {
       const data = await api(`/AllGames/${id}`);
       if (data.success) {
-        setSingleGameData(data.data || null);
+        setSingleGameData(data.data || {});
       } else {
         setError("Failed to fetch game data.");
       }
@@ -31,12 +34,11 @@ const PanelPage = () => {
 
   if (loading) return <div>Loading game data...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (!singleGameData) return <div>No game found.</div>;
 
   // ------------------------
-  // Group by DATE
+  //  Group by DATE (YYYY-MM-DD)
   // ------------------------
-  const groupedByDate = {};
+  const groupedByDate = {}; // { "2025-11-25": { open: [...], close: [...], day: "Tuesday" } }
 
   (singleGameData.openNo || []).forEach((item) => {
     if (!Array.isArray(item) || item.length < 3) return;
@@ -55,7 +57,9 @@ const PanelPage = () => {
   });
 
   // ------------------------
-  // Convert to groupedByDay
+  // Convert groupedByDate -> groupedByDay & groupedByDayOpen
+  // so the component receives { Monday: [...], Tuesday: [...], ... }
+  // each array contains entries in ascending date order.
   // ------------------------
   const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const groupedByDay = {};
@@ -65,6 +69,7 @@ const PanelPage = () => {
     groupedByDayOpen[d] = [];
   });
 
+  // Get sorted date keys (ascending)
   const sortedDateKeys = Object.keys(groupedByDate).sort((a, b) => new Date(a) - new Date(b));
 
   sortedDateKeys.forEach((dateKey) => {
@@ -73,6 +78,7 @@ const PanelPage = () => {
     const open = item.open || ["", "", dateKey, "Open", day];
     const close = item.close || ["", "", dateKey, "Close", day];
 
+    // push the full original arrays (keeps indexes same as server)
     if (!groupedByDayOpen[day]) groupedByDayOpen[day] = [];
     if (!groupedByDay[day]) groupedByDay[day] = [];
 
@@ -80,26 +86,20 @@ const PanelPage = () => {
     groupedByDay[day].push(close);
   });
 
-  const baseDateFromData = sortedDateKeys.length > 0
-    ? sortedDateKeys[0]
-    : new Date().toISOString().split("T")[0];
+  // ------------------------
+  // Compute baseDateFromData: earliest date available (safe fallback)
+  // ------------------------
+  const baseDateFromData = sortedDateKeys.length > 0 ? sortedDateKeys[0] : new Date().toISOString().split("T")[0];
 
   // ------------------------
-  // Latest result for display (most recent = last item)
+  // SEO description (unchanged)
   // ------------------------
-  const latestOpen = singleGameData.openNo?.at(-1);
-  const latestClose = singleGameData.closeNo?.at(-1);
-  const resultDisplay = latestOpen && latestClose
-    ? `${latestOpen[0]}-${latestOpen[1]}${latestClose[1]}-${latestClose[0]}`
-    : "**-**";
-
-  const description = `Dpboss ${singleGameData.name} jodi chart...`;
+  const description = `Dpboss ${singleGameData.name} jodi chart, ${singleGameData.name} jodi chart, old ${singleGameData.name} jodi chart, dpboss ${singleGameData.name} chart, ${singleGameData.name} jodi record, ${singleGameData.name}jodi record, ${singleGameData.name} jodi chart 2015, ${singleGameData.name} jodi chart 2012, ${singleGameData.name} jodi chart 2012 to 2023, ${singleGameData.name} final ank, ${singleGameData.name} jodi chart.co, ${singleGameData.name} jodi chart matka, matka jodi chart ${singleGameData.name}, matka ${singleGameData.name} chart, satta ${singleGameData.name} chart jodi, ${singleGameData.name} state chart, ${singleGameData.name} chart result, डीपी बॉस, सट्टा चार्ट, सट्टा मटका जोड़ी चार्ट, सट्टा मटका जोड़ी चार्ट, ${singleGameData.name} मटका जोड़ी चार्ट, सट्टा मटका ${singleGameData.name} चार्ट जोड़ी, ${singleGameData.name} सट्टा चार्ट, ${singleGameData.name} जोड़ी चार्ट`;
 
   return (
-    <div className="bg-danger border m-1 border-danger text-center">
+    <div className="bg-danger border m-1 border-danger text-center ">
       <Header />
-
-      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "Pink" }}>
+      <div className="border m-1 border-danger text-center " style={{ backgroundColor: "Pink" }}>
         <h3>{singleGameData.name} JODI CHART</h3>
       </div>
 
@@ -107,10 +107,20 @@ const PanelPage = () => {
         <p>{description}</p>
       </div>
 
-      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "Pink" }}>
+      <div className="border m-1 border-danger text-center " style={{ backgroundColor: "Pink" }}>
         <h3>{singleGameData.name}</h3>
-        {/* ✅ Safe result display */}
-        <h3>{resultDisplay}</h3>
+        <h3>
+          {(() => {
+            const today = new Date().toISOString().split("T")[0];
+
+            const todayOpen = singleGameData.openNo[0][0]
+
+            const todayClose = singleGameData.closeNo[0][0]
+            console.log(todayOpen,todayClose);
+            
+            return `${todayOpen}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${todayClose}`
+          })()}
+        </h3>
       </div>
 
       <PanelMatkaTable
@@ -118,12 +128,22 @@ const PanelPage = () => {
         groupedByDayOpen={groupedByDayOpen}
         gameName={singleGameData.name}
         baseDateFromData={baseDateFromData}
-        noOfDays={singleGameData.noOfDays}
+        noOfDays = {singleGameData.noOfDays}
       />
 
-      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "Pink" }}>
+      <div className="border m-1 border-danger text-center " style={{ backgroundColor: "Pink" }}>
         <h3>{singleGameData.name}</h3>
-        <h3>{resultDisplay}</h3>
+        <h3>
+          {(() => {
+            const today = new Date().toISOString().split("T")[0];
+
+            const todayOpen = singleGameData.openNo[0][0]
+
+            const todayClose = singleGameData.closeNo[0][0]
+
+            return`${todayOpen}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${todayClose}`;
+          })()}
+        </h3>
       </div>
     </div>
   );
