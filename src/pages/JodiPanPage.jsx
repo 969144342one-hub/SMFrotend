@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { api } from "../lib/api";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import {jwtDecode} from "jwt-decode"; // updated import to default
+import { jwtDecode } from "jwt-decode"; // updated import to default
 import * as XLSX from "xlsx";
 
 const JodiPanPage = () => {
@@ -14,6 +14,8 @@ const JodiPanPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [jsonFile, setJsonFile] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const token = localStorage.getItem("authToken");
   let userRole = null;
@@ -31,9 +33,11 @@ const JodiPanPage = () => {
 
   const fetchSingleGameData = async () => {
     try {
-      const data = await api(`/AllGames/${id}`);
+      const data = await api(`/AllGames/${id}?page=${page}&limit=100`);
+
       if (data.success) {
         setSingleGameData(data.data || {});
+        setTotalPages(data.totalPages || 1);
       } else {
         setError("Failed to fetch game data.");
       }
@@ -48,7 +52,7 @@ const JodiPanPage = () => {
     if (id) {
       fetchSingleGameData();
     }
-  }, [id]);
+  }, [id, page]); // ✅ ADD page
 
   if (loading) {
     return <div>Loading game data...</div>;
@@ -131,8 +135,12 @@ const JodiPanPage = () => {
   (singleGameData.openNo || []).forEach((item) => {
     const dateKey = getDateKeyFromItem(item);
     if (!dateKey) return;
-    const dObj = dateMap[dateKey] || { day: new Date(dateKey).toLocaleDateString("en-US", { weekday: "long" }) };
-    dObj.day = new Date(dateKey).toLocaleDateString("en-US", { weekday: "long" });
+    const dObj = dateMap[dateKey] || {
+      day: new Date(dateKey).toLocaleDateString("en-US", { weekday: "long" }),
+    };
+    dObj.day = new Date(dateKey).toLocaleDateString("en-US", {
+      weekday: "long",
+    });
     dObj.open = item; // preserve full array
     dateMap[dateKey] = dObj;
   });
@@ -140,14 +148,26 @@ const JodiPanPage = () => {
   (singleGameData.closeNo || []).forEach((item) => {
     const dateKey = getDateKeyFromItem(item);
     if (!dateKey) return;
-    const dObj = dateMap[dateKey] || { day: new Date(dateKey).toLocaleDateString("en-US", { weekday: "long" }) };
-    dObj.day = new Date(dateKey).toLocaleDateString("en-US", { weekday: "long" });
+    const dObj = dateMap[dateKey] || {
+      day: new Date(dateKey).toLocaleDateString("en-US", { weekday: "long" }),
+    };
+    dObj.day = new Date(dateKey).toLocaleDateString("en-US", {
+      weekday: "long",
+    });
     dObj.close = item; // preserve full array
     dateMap[dateKey] = dObj;
   });
 
   // Now turn dateMap into groupedByDay arrays sorted by date (ascending)
-  const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const dayNames = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
   const groupedByDay = {};
   const groupedByDay_Open = {};
   dayNames.forEach((d) => {
@@ -155,11 +175,15 @@ const JodiPanPage = () => {
     groupedByDay_Open[d] = [];
   });
 
-  const sortedDates = Object.keys(dateMap).sort((a, b) => new Date(a) - new Date(b));
+  const sortedDates = Object.keys(dateMap).sort(
+    (a, b) => new Date(a) - new Date(b),
+  );
 
   sortedDates.forEach((dateKey) => {
     const entry = dateMap[dateKey];
-    const day = entry.day || new Date(dateKey).toLocaleDateString("en-US", { weekday: "long" });
+    const day =
+      entry.day ||
+      new Date(dateKey).toLocaleDateString("en-US", { weekday: "long" });
 
     // push original arrays (open/close) if they exist,
     // fallback to placeholder arrays while preserving shape if needed
@@ -170,7 +194,10 @@ const JodiPanPage = () => {
   const description = `Dpboss ${singleGameData.name} jodi chart, ${singleGameData.name} jodi chart, old ${singleGameData.name} jodi chart, dpboss ${singleGameData.name} chart, ${singleGameData.name} jodi record...`;
 
   return (
-    <div className="border m-1 border-danger text-center " style={{backgroundColor:"black"}}>
+    <div
+      className="border m-1 border-danger text-center "
+      style={{ backgroundColor: "black" }}
+    >
       <Header />
 
       {/* <div className="border m-1 border-danger text-center" style={{ background: "Pink" }}>
@@ -181,13 +208,19 @@ const JodiPanPage = () => {
         <p>{description}</p>
       </div> */}
 
-      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "white" }}>
+      <div
+        className="border m-1 border-danger text-center"
+        style={{ backgroundColor: "white" }}
+      >
         <h3>JODI CHART</h3>
       </div>
 
       {/* File Upload Section */}
       {userRole === "Admin" && (
-        <div className="bg-light border border-dark p-3 m-2" style={{ borderRadius: "10px" }}>
+        <div
+          className="bg-light border border-dark p-3 m-2"
+          style={{ borderRadius: "10px" }}
+        >
           <h5>Import / Update Game Data (.json or .xlsx)</h5>
 
           <input
@@ -197,30 +230,90 @@ const JodiPanPage = () => {
             className="form-control my-2"
           />
 
-          <button onClick={handleFileUpload} className="btn btn-success" disabled={!jsonFile}>
+          <button
+            onClick={handleFileUpload}
+            className="btn btn-success"
+            disabled={!jsonFile}
+          >
             Upload & Update
           </button>
         </div>
       )}
 
       {/* TOP Result */}
-      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "white" }}>
+      <div
+        className="border m-1 border-danger text-center"
+        style={{ backgroundColor: "white" }}
+      >
         <h3>{singleGameData.name}</h3>
         <h3>
-          {singleGameData.openNo?.length > 0 && singleGameData.closeNo?.length > 0
+          {singleGameData.openNo?.length > 0 &&
+          singleGameData.closeNo?.length > 0
             ? `${singleGameData.openNo[0][0]}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${singleGameData.closeNo[0][0]}`
             : "N/A"}
         </h3>
       </div>
-      
-      {/* TABLE */}
-      <MatkaTable  groupedData={groupedByDay} groupedDataOpen={groupedByDay_Open} titleNameHeading={singleGameData.name} noOfDays={singleGameData.noOfDays} />
 
+      {/* TABLE */}
+      <MatkaTable
+        groupedData={groupedByDay}
+        groupedDataOpen={groupedByDay_Open}
+        titleNameHeading={singleGameData.name}
+        noOfDays={singleGameData.noOfDays}
+      />
+
+      <div
+        style={{
+          margin: "20px",
+          display: "flex",
+          gap: "10px",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {/* First */}
+        <button onClick={() => setPage(1)} disabled={page === 1}>
+          {"<<"}
+        </button>
+
+        {/* Previous */}
+        <button
+          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          disabled={page === 1}
+        >
+          {"<"}
+        </button>
+
+        {/* Page Info */}
+        <span style={{ fontWeight: "bold", color: "white" }}>
+          {page} / {totalPages}
+        </span>
+
+        {/* Next */}
+        <button
+          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+          disabled={page === totalPages}
+        >
+          {">"}
+        </button>
+
+        {/* Last */}
+        <button
+          onClick={() => setPage(totalPages)}
+          disabled={page === totalPages}
+        >
+          {">>"}
+        </button>
+      </div>
       {/* BOTTOM Result */}
-      <div className="border m-1 border-danger text-center" style={{ backgroundColor: "white" }}>
+      <div
+        className="border m-1 border-danger text-center"
+        style={{ backgroundColor: "white" }}
+      >
         <h3>{singleGameData.name}</h3>
-        <h3 >
-          {singleGameData.openNo?.length > 0 && singleGameData.closeNo?.length > 0
+        <h3>
+          {singleGameData.openNo?.length > 0 &&
+          singleGameData.closeNo?.length > 0
             ? `${singleGameData.openNo[0][0]}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${singleGameData.closeNo[0][0]}`
             : "N/A"}
         </h3>

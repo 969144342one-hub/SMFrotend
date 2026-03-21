@@ -11,6 +11,7 @@ const PanelPage = () => {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  
 
   const { id } = useParams();
 
