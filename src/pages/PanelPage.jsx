@@ -9,15 +9,37 @@ const PanelPage = () => {
   const [singleGameData, setSingleGameData] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
   const { id } = useParams();
 
+  // const fetchSingleGameData = async () => {
+  //   try {
+  //     const data = await api(`/AllGames/${id}`);
+  //     if (data.success) {
+  //       setSingleGameData(data.data || {});
+  //     } else {
+  //       setError("Failed to fetch game data.");
+  //     }
+  //   } catch (err) {
+  //     setError(err.message);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   if (id) fetchSingleGameData();
+  // }, [id]);
 
   const fetchSingleGameData = async () => {
     try {
-      const data = await api(`/AllGames/${id}`);
+      const data = await api(`/AllGames/${id}?page=${page}&limit=100`);
+
       if (data.success) {
         setSingleGameData(data.data || {});
+        setTotalPages(data.totalPages || 1);
       } else {
         setError("Failed to fetch game data.");
       }
@@ -27,10 +49,9 @@ const PanelPage = () => {
       setLoading(false);
     }
   };
-
   useEffect(() => {
     if (id) fetchSingleGameData();
-  }, [id]);
+  }, [id, page]);
 
   if (loading) return <div>Loading game data...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -61,7 +82,15 @@ const PanelPage = () => {
   // so the component receives { Monday: [...], Tuesday: [...], ... }
   // each array contains entries in ascending date order.
   // ------------------------
-  const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+  const dayNames = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
   const groupedByDay = {};
   const groupedByDayOpen = {};
   dayNames.forEach((d) => {
@@ -70,11 +99,15 @@ const PanelPage = () => {
   });
 
   // Get sorted date keys (ascending)
-  const sortedDateKeys = Object.keys(groupedByDate).sort((a, b) => new Date(a) - new Date(b));
+  const sortedDateKeys = Object.keys(groupedByDate).sort(
+    (a, b) => new Date(a) - new Date(b),
+  );
 
   sortedDateKeys.forEach((dateKey) => {
     const item = groupedByDate[dateKey];
-    const day = item.day || new Date(dateKey).toLocaleDateString("en-US", { weekday: "long" });
+    const day =
+      item.day ||
+      new Date(dateKey).toLocaleDateString("en-US", { weekday: "long" });
     const open = item.open || ["", "", dateKey, "Open", day];
     const close = item.close || ["", "", dateKey, "Close", day];
 
@@ -89,7 +122,10 @@ const PanelPage = () => {
   // ------------------------
   // Compute baseDateFromData: earliest date available (safe fallback)
   // ------------------------
-  const baseDateFromData = sortedDateKeys.length > 0 ? sortedDateKeys[0] : new Date().toISOString().split("T")[0];
+  const baseDateFromData =
+    sortedDateKeys.length > 0
+      ? sortedDateKeys[0]
+      : new Date().toISOString().split("T")[0];
 
   // ------------------------
   // SEO description (unchanged)
@@ -99,7 +135,10 @@ const PanelPage = () => {
   return (
     <div className="bg-danger border m-1 border-danger text-center ">
       <Header />
-      <div className="border m-1 border-danger text-center " style={{ backgroundColor: "Pink" }}>
+      <div
+        className="border m-1 border-danger text-center "
+        style={{ backgroundColor: "Pink" }}
+      >
         <h3>{singleGameData.name} JODI CHART</h3>
       </div>
 
@@ -107,18 +146,21 @@ const PanelPage = () => {
         <p>{description}</p>
       </div>
 
-      <div className="border m-1 border-danger text-center " style={{ backgroundColor: "Pink" }}>
+      <div
+        className="border m-1 border-danger text-center "
+        style={{ backgroundColor: "Pink" }}
+      >
         <h3>{singleGameData.name}</h3>
         <h3>
           {(() => {
             const today = new Date().toISOString().split("T")[0];
 
-            const todayOpen = singleGameData.openNo[0][0]
+            const todayOpen = singleGameData.openNo[0][0];
 
-            const todayClose = singleGameData.closeNo[0][0]
-            console.log(todayOpen,todayClose);
-            
-            return `${todayOpen}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${todayClose}`
+            const todayClose = singleGameData.closeNo[0][0];
+            console.log(todayOpen, todayClose);
+
+            return `${todayOpen}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${todayClose}`;
           })()}
         </h3>
       </div>
@@ -128,20 +170,66 @@ const PanelPage = () => {
         groupedByDayOpen={groupedByDayOpen}
         gameName={singleGameData.name}
         baseDateFromData={baseDateFromData}
-        noOfDays = {singleGameData.noOfDays}
+        noOfDays={singleGameData.noOfDays}
       />
+      <div
+        style={{
+          margin: "20px",
+          display: "flex",
+          gap: "10px",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        {/* First Page */}
+        <button onClick={() => setPage(1)} disabled={page === 1}>
+          {"<<"}
+        </button>
 
-      <div className="border m-1 border-danger text-center " style={{ backgroundColor: "Pink" }}>
+        {/* Previous */}
+        <button
+          onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          disabled={page === 1}
+        >
+          {"<"}
+        </button>
+
+        {/* Page Info */}
+        <span style={{ fontWeight: "bold" }}>
+          {page} / {totalPages}
+        </span>
+
+        {/* Next */}
+        <button
+          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+          disabled={page === totalPages}
+        >
+          {">"}
+        </button>
+
+        {/* Last Page */}
+        <button
+          onClick={() => setPage(totalPages)}
+          disabled={page === totalPages}
+        >
+          {">>"}
+        </button>
+      </div>
+
+      <div
+        className="border m-1 border-danger text-center "
+        style={{ backgroundColor: "Pink" }}
+      >
         <h3>{singleGameData.name}</h3>
         <h3>
           {(() => {
             const today = new Date().toISOString().split("T")[0];
 
-            const todayOpen = singleGameData.openNo[0][0]
+            const todayOpen = singleGameData.openNo[0][0];
 
-            const todayClose = singleGameData.closeNo[0][0]
+            const todayClose = singleGameData.closeNo[0][0];
 
-            return`${todayOpen}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${todayClose}`;
+            return `${todayOpen}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${todayClose}`;
           })()}
         </h3>
       </div>
