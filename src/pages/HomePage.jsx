@@ -18,6 +18,7 @@ import AllPageLink from "../components/allLinkPage";
 import ApiPoller from "../components/ApiCaller";
 import { api } from "../lib/api";
 import { jwtDecode } from "jwt-decode";
+import {useNavigate} from 'react-router-dom'
 
 // --- New Component for Static Buttons ---
 
@@ -28,7 +29,8 @@ const handleRefresh = () => {
 
 const handleCall = () => {
   // Opens dialer with number
-  window.location.href = "https://api.whatsapp.com/send/?phone=919203516304&text=Welcome%21+Please+message+us+or+call+on+919691443421&type=phone_number&app_absent=0"; // ← replace with your number
+  window.location.href =
+    "https://api.whatsapp.com/send/?phone=919203516304&text=Welcome%21+Please+message+us+or+call+on+919691443421&type=phone_number&app_absent=0"; // ← replace with your number
 };
 const StaticButtons = () => {
   // Use a React Portal to render the buttons outside the normal DOM hierarchy.
@@ -80,7 +82,7 @@ const StaticButtons = () => {
         🔄 Refresh Page
       </button>
     </div>,
-    document.body
+    document.body,
   );
 };
 // ------------------------------------------
@@ -88,6 +90,7 @@ const StaticButtons = () => {
 const HomePage = ({ setGameTitle }) => {
   const [responseNotification, setResponseNotification] = useState([]);
   const token = localStorage.getItem("authToken");
+  const navigate = useNavigate()
 
   // let username = null;
   let role = null;
@@ -117,7 +120,7 @@ const HomePage = ({ setGameTitle }) => {
         notificationsArray = await apiResponse;
       } else if (typeof apiResponse === "object") {
         notificationsArray = Object.values(apiResponse).filter(
-          (item) => item && typeof item === "object" && item.name
+          (item) => item && typeof item === "object" && item.name,
         );
       }
 
@@ -161,7 +164,14 @@ const HomePage = ({ setGameTitle }) => {
         {/* Page Sections */}
         <Header />
         <WelcomeBanner />
-
+        {role === "Admin" ?
+        <button onClick={() => navigate("/admin/guessing")}>
+          Add Guessing Chart
+        </button> : ""}
+        
+        <button onClick={() => navigate("/guessing-chart")}>
+          Guessing Chart
+        </button>
         {/* Pass the first notification object safely */}
         {responseNotification.length > 0 && (
           <NotificationPage
@@ -169,18 +179,14 @@ const HomePage = ({ setGameTitle }) => {
             notificationMessage={responseNotification[0]}
           />
         )}
-
         <InfoSection />
-        
         {role === "Admin" && <ApiPoller />}
         <NotificationPage
           role={role}
           notificationMessage={responseNotification?.[1] || {}}
         />
-
         {/* This existing check is redundant if you're using role === "Admin" above, but maintained here */}
         {role === "Admin" && <UserPayments />}
-
         {/* <LuckyNumberSection /> */}
         <LiveResultSection />
         <NoticeSection />
@@ -190,9 +196,11 @@ const HomePage = ({ setGameTitle }) => {
           role={role}
           notificationMessage={responseNotification?.[2] || {}}
         />
-        <StarlStarlineSectionineTable role={role}
+        <StarlStarlineSectionineTable
+          role={role}
           messagefor5="5"
-          notificationMessage={responseNotification?.[4] || {}}/>
+          notificationMessage={responseNotification?.[4] || {}}
+        />
         {/* <NotificationPage
           role={role}
           messagefor5="5"

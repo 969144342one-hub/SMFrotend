@@ -1,23 +1,231 @@
 import React from "react";
-import "./Comman.css";
+
+const styles = `
+  .panel-table-wrapper {
+    width: 100%;
+    padding: 0 2px;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .go-bottom, .go-up {
+    display: inline-block;
+    margin: 8px 6px;
+    background: #c0392b;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+  }
+
+  .compact-table-box {
+    width: 100%;
+    overflow-x: hidden; /* NO horizontal scroll */
+  }
+
+  .matka-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* forces equal column widths, no overflow */
+  }
+
+  /* ── Title row ── */
+  .compact-title {
+    background: #c0392b;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 7px 4px;
+    letter-spacing: 0.3px;
+    text-align: center;
+  }
+
+  /* ── Day header ── */
+  .compact-day {
+    background: #222;
+    color: #f1c40f;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 2px;
+    text-align: center;
+    border: 1px solid #444;
+  }
+
+  /* ── Week cell ── */
+  .week-cell {
+    background: #fff8e1;
+    border: 1px solid #e0c97f;
+    vertical-align: middle;
+    text-align: center;
+    padding: 3px 2px;
+    word-break: break-word;
+  }
+
+  .week-date-text {
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #333;
+    line-height: 1.3;
+    display: block;
+  }
+
+  .week-to-text {
+    font-size: 8px;
+    color: #888;
+    display: block;
+  }
+
+  /* ── Data cell ── */
+  .cell {
+    border: 1px solid #ccc;
+    padding: 3px 1px;
+    text-align: center;
+    vertical-align: middle;
+    background: #fff;
+  }
+
+  /* Cell inner layout: left digits | jodi | right digits */
+  .data-of-jodi-open-close {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1px;
+    width: 100%;
+  }
+
+  /* Left col: open digits stacked vertically */
+  .panel-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0px;
+  }
+
+  /* Right col: close digits stacked vertically */
+  .panel-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0px;
+  }
+
+  .panel-left span,
+  .panel-right span {
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    color: #1a237e;
+    line-height: 1.35;
+  }
+
+  /* Jodi center */
+  .big-jodi {
+    font-size: 13px;
+    font-weight: 900;
+    color: #000;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .big-jodi.red {
+    color: #c0392b;
+  }
+
+  .empty-slot {
+    color: #bbb;
+    font-size: 11px;
+  }
+
+  /* ───────────────────────────────────────────
+     MOBILE: squeeze everything to fit screen
+     ─────────────────────────────────────────── */
+  @media (max-width: 480px) {
+    .compact-title {
+      font-size: 9px;
+      padding: 5px 2px;
+    }
+
+    .compact-day {
+      font-size: 8px;
+      padding: 3px 1px;
+    }
+
+    .week-date-text {
+      font-size: 7.5px;
+    }
+
+    .week-to-text {
+      font-size: 6.5px;
+    }
+
+    .panel-left span,
+    .panel-right span {
+      font-size: 7.5px;
+    }
+
+    .big-jodi {
+      font-size: 10px;
+    }
+
+    .cell {
+      padding: 2px 0px;
+    }
+
+    .week-cell {
+      padding: 2px 1px;
+    }
+
+    .go-bottom, .go-up {
+      font-size: 11px;
+      padding: 6px 12px;
+    }
+  }
+
+  @media (max-width: 360px) {
+    .compact-title {
+      font-size: 8px;
+    }
+
+    .compact-day {
+      font-size: 7px;
+    }
+
+    .week-date-text {
+      font-size: 6.5px;
+    }
+
+    .panel-left span,
+    .panel-right span {
+      font-size: 7px;
+    }
+
+    .big-jodi {
+      font-size: 9px;
+    }
+  }
+`;
 
 export default function PanelMatkaTable({
   groupedData = {},
   groupedByDayOpen = {},
   baseDateFromData,
   gameName = "",
-  noOfDays = 7, // <-- new prop (accepts 5, 6, or 7). default 7
+  noOfDays = 7,
 }) {
-  // normalize noOfDays to 5/6/7
   const nd = Number(noOfDays);
   let daysCount = 7;
   if (Number.isFinite(nd)) {
     if (nd === 7) daysCount = 7;
     else if (nd === 6) daysCount = 6;
-    else daysCount = 5; // fallback
+    else daysCount = 5;
   }
 
-  // short names and dynamic headers (include "Week")
   const daysShort = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const headers = ["Week", ...daysShort.slice(0, daysCount)];
 
@@ -33,62 +241,52 @@ export default function PanelMatkaTable({
 
   const baseDate = new Date(baseDateFromData);
 
-  const formatDate = (date) => {
+  // Short date: DD/MM for mobile, DD-MM-YY for tablet+
+  const formatDateShort = (date) => {
     const d = date.getDate().toString().padStart(2, "0");
     const m = (date.getMonth() + 1).toString().padStart(2, "0");
-    const y = date.getFullYear();
-    return `${d}-${m}-${y}`;
+    const y = String(date.getFullYear()).slice(2);
+    return `${d}/${m}/${y}`;
   };
 
-  // WEEK INDEX CALCULATOR
   const getWeekIndex = (entryDate, mondayBase) => {
     const msPerDay = 24 * 60 * 60 * 1000;
     const diff = (entryDate - mondayBase) / msPerDay;
     return Math.floor(diff / 7);
   };
 
-  // Force any date to Monday
   const getMonday = (date) => {
     const d = new Date(date);
-    const day = d.getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+    const day = d.getDay();
     const diff = day === 0 ? -6 : 1 - day;
     d.setDate(d.getDate() + diff);
     return d;
   };
 
-  // We convert baseDate to Monday reference
   const mondayBaseDate = getMonday(baseDate);
 
-  // BUILD weekData
   const weekData = {};
 
-  // OPEN DATA
   Object.keys(groupedByDayOpen).forEach((day) => {
     (groupedByDayOpen[day] || []).forEach((entry) => {
       const date = new Date(entry[2]);
       const weekIndex = getWeekIndex(date, mondayBaseDate);
-
       if (!weekData[weekIndex]) weekData[weekIndex] = {};
       if (!weekData[weekIndex][day]) weekData[weekIndex][day] = {};
-
       weekData[weekIndex][day].open = entry;
     });
   });
 
-  // CLOSE DATA
   Object.keys(groupedData).forEach((day) => {
     (groupedData[day] || []).forEach((entry) => {
       const date = new Date(entry[2]);
       const weekIndex = getWeekIndex(date, mondayBaseDate);
-
       if (!weekData[weekIndex]) weekData[weekIndex] = {};
       if (!weekData[weekIndex][day]) weekData[weekIndex][day] = {};
-
       weekData[weekIndex][day].close = entry;
     });
   });
 
-  // Sort week indexes
   const existingWeekIndexes = Object.keys(weekData)
     .map((n) => Number(n))
     .sort((a, b) => a - b);
@@ -103,31 +301,24 @@ export default function PanelMatkaTable({
   const weekIndexes = [];
   for (let w = minWeek; w <= maxWeek; w++) weekIndexes.push(w);
 
-  // BUILD FINAL TABLE ROWS
   const data = weekIndexes.map((weekIndex) => {
-    // Start week from Monday always
     const startOfWeek = new Date(mondayBaseDate);
     startOfWeek.setDate(mondayBaseDate.getDate() + weekIndex * 7);
 
     const endOfWeek = new Date(startOfWeek);
     endOfWeek.setDate(startOfWeek.getDate() + 6);
 
-    const weekStartStr = formatDate(startOfWeek);
-    const weekEndStr = formatDate(endOfWeek);
+    const weekStartStr = formatDateShort(startOfWeek);
+    const weekEndStr = formatDateShort(endOfWeek);
 
-    // only iterate the required short days (Mon..Fri/Mon..Sat/Mon..Sun)
     const rowData = daysShort.slice(0, daysCount).map((shortDay) => {
       const fullDay = Object.keys(dayMap).find((k) => dayMap[k] === shortDay);
-
       const weekEntry = weekData[weekIndex] || {};
       const dayEntry = weekEntry[fullDay] || {};
-
       const openData = dayEntry.open || ["", "", ""];
       const closeData = dayEntry.close || ["", "", ""];
-
       const jodi =
         openData[1] && closeData[1] ? `${openData[1]}${closeData[1]}` : "";
-
       return { openPanel: openData, jodi, closePanel: closeData };
     });
 
@@ -137,99 +328,98 @@ export default function PanelMatkaTable({
   const redNumbers = ["44", "50", "38", "99", "61", "05", "77", "88", "66"];
 
   return (
-    <div className="panel-table-wrapper compact-layout">
-      <button
-        className="go-bottom"
-        onClick={() => {
-          window.scrollTo({
-            top: document.documentElement.scrollHeight,
-            behavior: "smooth",
-          });
-        }}
-      >
-        Go to Bottom{" "}
-      </button>
+    <>
+      {/* Inject scoped CSS */}
+      <style>{styles}</style>
 
-      <div className="table-responsive compact-table-box">
-        <table className="matka-table compact-table">
-          <thead>
-            <tr>
-              {/* colSpan must match headers length */}
-              <th colSpan={headers.length} className="title compact-title">
-                {gameName} MATKA PANEL RECORD 2019 - 2025
-              </th>
-            </tr>
-            <tr>
-              {headers.map((day) => (
-                <th key={day} className="day compact-day">
-                  {day}
+      <div className="panel-table-wrapper">
+        <button
+          className="go-bottom"
+          onClick={() =>
+            window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" })
+          }
+        >
+          Go to Bottom
+        </button>
+
+        {/* NO overflow-x: auto here — table-layout:fixed does the job */}
+        <div className="compact-table-box">
+          <table className="matka-table">
+            <thead>
+              <tr>
+                <th colSpan={headers.length} className="compact-title">
+                  {gameName} MATKA PANEL RECORD 2019 - 2025
                 </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody>
-            {data.map((row, rowIndex) => (
-              <tr key={rowIndex}>
-                {/* Week column */}
-                <td
-                  className="week-cell"
-                  style={{ textAlign: "center", padding: "6px 4px" }}
-                >
-                  <div style={{ fontSize: "11px", fontWeight: "600" }}>
-                    {row.weekStartStr}
-                  </div>
-                  <div style={{ fontSize: "10px", opacity: 0.8 }}>to</div>
-                  <div style={{ fontSize: "11px", fontWeight: "600" }}>
-                    {row.weekEndStr}
-                  </div>
-                </td>
-
-                {/* Day columns - only the sliced ones */}
-                {row.rowData.map(({ openPanel, jodi, closePanel }, colIndex) => (
-                  <td
-                    key={colIndex}
-                    className="cell"
-                    style={{ padding: "4px", textAlign: "center" }}
-                  >
-                    {openPanel[0] && closePanel[0] ? (
-                      <div className="data-of-jodi-open-close compact-data-box">
-                        <div className="small-panel compact-panel">
-                          {String(openPanel[0]).split("").map((d, i) => (
-                            <span key={i}>{d}</span>
-                          ))}
-                        </div>
-
-                        <div
-                          className={`big-jodi compact-jodi ${
-                            redNumbers.includes(jodi) ? "red" : ""
-                          }`}
-                        >
-                          <span>{jodi || "-"}</span>
-                        </div>
-
-                        <div className="small-panel compact-panel">
-                          {String(closePanel[0]).split("").map((d, i) => (
-                            <span key={i}>{d}</span>
-                          ))}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="empty-slot">-</div>
-                    )}
-                  </td>
+              </tr>
+              <tr>
+                {headers.map((day) => (
+                  <th key={day} className="compact-day">
+                    {day}
+                  </th>
                 ))}
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+
+            <tbody>
+              {data.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {/* Week column */}
+                  <td className="week-cell">
+                    <span className="week-date-text">{row.weekStartStr}</span>
+                    <span className="week-to-text">to</span>
+                    <span className="week-date-text">{row.weekEndStr}</span>
+                  </td>
+
+                  {/* Day columns */}
+                  {row.rowData.map(({ openPanel, jodi, closePanel }, colIndex) => (
+                    <td key={colIndex} className="cell">
+                      {openPanel[0] && closePanel[0] ? (
+                        <div className="data-of-jodi-open-close">
+                          {/* Open digits — stacked vertically on LEFT */}
+                          <div className="panel-left">
+                            {String(openPanel[0])
+                              .split("")
+                              .map((d, i) => (
+                                <span key={i}>{d}</span>
+                              ))}
+                          </div>
+
+                          {/* Jodi — CENTER */}
+                          <div
+                            className={`big-jodi ${
+                              redNumbers.includes(jodi) ? "red" : ""
+                            }`}
+                          >
+                            {jodi || "-"}
+                          </div>
+
+                          {/* Close digits — stacked vertically on RIGHT */}
+                          <div className="panel-right">
+                            {String(closePanel[0])
+                              .split("")
+                              .map((d, i) => (
+                                <span key={i}>{d}</span>
+                              ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="empty-slot">-</div>
+                      )}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <button
+          className="go-up"
+          onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+        >
+          Go to Top
+        </button>
       </div>
-      <button
-        className="go-up"
-        onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-      >
-        Go to Top
-      </button>
-    </div>
+    </>
   );
 }

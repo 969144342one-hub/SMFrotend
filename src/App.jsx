@@ -7,7 +7,8 @@ import AllGamesDetils from './pages/AllGamesDetils'
 import PanelPage from "./pages/PanelPage";
 import SessionWrapper from "./SessionWrapper";
 import AdminRoute from "./AdminRoute";
-
+import AddGuessingChart from "./pages/AddGuessingChart";
+import GuessingChartDisplay from "./pages/GuessingChartDisplay";
 import "./App.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -26,7 +27,8 @@ export default function App() {
           {/* Other pages */}
           <Route path="/JodiPanPage/:id" element={<JodiPanPage />} />
           <Route path="/PanelPage/:id" element={<PanelPage />} />
-
+          <Route path="/guessing-chart" element={<GuessingChartDisplay />} />
+          <Route path="/admin/guessing" element={<AddGuessingChart />} />
           {/* ❗ Protected Admin Route */}
           <Route
             path="/allUser"

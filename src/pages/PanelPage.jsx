@@ -1,46 +1,194 @@
 // src/pages/PanelPage.jsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import Header from "../components/Header";
 import PanelMatkaTable from "../components/PanelMatkaTable";
 import { useParams } from "react-router-dom";
 import { api } from "../lib/api";
+import { jwtDecode } from "jwt-decode";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const PanelPage = () => {
-  const [singleGameData, setSingleGameData] = useState({});
+  const [singleGameData, setSingleGameData] = useState({
+    openNo: [],
+    closeNo: [],
+  });
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  
 
   const { id } = useParams();
 
-  // const fetchSingleGameData = async () => {
-  //   try {
-  //     const data = await api(`/AllGames/${id}`);
-  //     if (data.success) {
-  //       setSingleGameData(data.data || {});
-  //     } else {
-  //       setError("Failed to fetch game data.");
-  //     }
-  //   } catch (err) {
-  //     setError(err.message);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   if (id) fetchSingleGameData();
-  // }, [id]);
-
-  const fetchSingleGameData = async () => {
+  const token = localStorage.getItem("authToken");
+  let userRole = null;
+  if (token) {
     try {
-      const data = await api(`/AllGames/${id}?page=${page}&limit=100`);
+      const decoded = jwtDecode(token);
+      userRole = decoded.role;
+    } catch (err) {}
+  }
 
+  // Range Modal States
+  const [showRangeModal, setShowRangeModal] = useState(false);
+  const [rangeStart, setRangeStart] = useState("");
+  const [rangeEnd, setRangeEnd] = useState("");
+  const [rangeDays, setRangeDays] = useState([]);
+  const [rangeData, setRangeData] = useState({});
+  const [rangeErrors, setRangeErrors] = useState({});
+
+  const getDatesBetween = (start, end) => {
+    const s = new Date(start);
+    const e = new Date(end);
+    const list = [];
+    let cur = new Date(s);
+    while (cur <= e) {
+      list.push(new Date(cur));
+      cur.setDate(cur.getDate() + 1);
+    }
+    return list;
+  };
+
+  useEffect(() => {
+    if (rangeStart && rangeEnd) {
+      const days = getDatesBetween(rangeStart, rangeEnd);
+      setRangeDays(days);
+      const obj = {};
+      days.forEach((d) => {
+        const key = d.toISOString().split("T")[0];
+
+        // Check if data already exists for this date
+        const existingOpen = (singleGameData.openNo || []).find(
+          (item) => item[2] && String(item[2]).split("T")[0] === key,
+        );
+        const existingClose = (singleGameData.closeNo || []).find(
+          (item) => item[2] && String(item[2]).split("T")[0] === key,
+        );
+
+        obj[key] = {
+          result: {
+            open: existingOpen ? `${existingOpen[0]}-${existingOpen[1]}` : "",
+            close: existingClose
+              ? `${existingClose[0]}-${existingClose[1]}`
+              : "",
+          },
+          type: existingOpen ? "Open" : existingClose ? "Close" : "Open",
+        };
+      });
+      setRangeData(obj);
+    }
+  }, [rangeStart, rangeEnd]);
+
+  const digitsOnly = (s = "") => s.toString().replace(/[^0-9]/g, "");
+
+  const computeCheckDigit = (digitsStr) => {
+    const arr = digitsStr
+      .slice(-3)
+      .split("")
+      .map((c) => parseInt(c, 10));
+    return arr.reduce((a, b) => a + b, 0) % 10;
+  };
+
+  const validateRangeEntry = (rawStr) => {
+    if (!rawStr) return { ok: false, msg: "Empty value" };
+    const parts = rawStr
+      .split("-")
+      .map((p) => p.trim())
+      .filter(Boolean);
+    let providedCheck = null;
+    if (parts.length >= 2 && /^[0-9]$/.test(parts[parts.length - 1])) {
+      providedCheck = parts.pop();
+    }
+    const mainDigits = digitsOnly(parts.join(""));
+    if (!mainDigits) return { ok: false, msg: "Must contain digits" };
+    if (mainDigits.length >= 3) {
+      const expected = computeCheckDigit(mainDigits);
+      if (providedCheck && parseInt(providedCheck) !== expected)
+        return { ok: false, msg: `Invalid check digit, expected ${expected}` };
+    }
+    return { ok: true, mainDigits, providedCheck };
+  };
+
+  const handleSaveRangeResults = async () => {
+    if (!rangeDays.length) {
+      toast.error("Select a date range");
+      return;
+    }
+    const errors = {};
+    const preparedRows = [];
+
+    for (const d of rangeDays) {
+      const key = d.toISOString().split("T")[0];
+      const entry = rangeData[key] || {
+        result: { open: "", close: "" },
+        type: "Open",
+      };
+      const raw =
+        entry.type === "Open" ? entry.result.open : entry.result.close;
+      const validation = validateRangeEntry((raw || "").trim());
+      if (!validation.ok) {
+        errors[key] = validation.msg;
+        continue;
+      }
+      const checkDigit =
+        validation.providedCheck ?? computeCheckDigit(validation.mainDigits);
+      preparedRows.push({
+        key,
+        date: d,
+        mainDigits: validation.mainDigits,
+        checkDigit,
+        type: entry.type,
+        dayName: d.toLocaleDateString("en-US", { weekday: "long" }),
+      });
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setRangeErrors(errors);
+      toast.error("Fix validation errors first");
+      return;
+    }
+
+    setRangeErrors({});
+    try {
+      for (const r of preparedRows) {
+        const payload = [
+          r.mainDigits,
+          r.checkDigit,
+          r.date.toISOString(),
+          r.type,
+          r.dayName,
+        ];
+        const res = await api(`/AllGames/updateGame/${id}`, {
+          method: "PUT",
+          body: JSON.stringify({ resultNo: payload }),
+        });
+        if (!res.success) throw new Error(res.message || "Failed");
+      }
+      toast.success("All range results saved!");
+      fetchInitialData();
+    } catch (err) {
+      toast.error("Error: " + err.message);
+    }
+  };
+  // Merge new page data into existing accumulated data
+  const mergeGameData = (existing, incoming) => {
+    return {
+      ...incoming,
+      openNo: [...(existing.openNo || []), ...(incoming.openNo || [])],
+      closeNo: [...(existing.closeNo || []), ...(incoming.closeNo || [])],
+    };
+  };
+
+  // Initial load: fetch first 365 records (≈ 1 year)
+  const fetchInitialData = async () => {
+    setLoading(true);
+    try {
+      const data = await api(`/AllGames/${id}?page=1&limit=365`);
       if (data.success) {
-        setSingleGameData(data.data || {});
+        setSingleGameData(data.data || { openNo: [], closeNo: [] });
         setTotalPages(data.totalPages || 1);
+        setPage(1);
       } else {
         setError("Failed to fetch game data.");
       }
@@ -50,17 +198,49 @@ const PanelPage = () => {
       setLoading(false);
     }
   };
-  useEffect(() => {
-    if (id) fetchSingleGameData();
-  }, [id, page]);
 
-  if (loading) return <div>Loading game data...</div>;
+  // Load more: fetch next page and append
+  const handleLoadMore = async () => {
+    if (loadingMore || page >= totalPages) return;
+    setLoadingMore(true);
+    const nextPage = page + 1;
+    try {
+      const data = await api(`/AllGames/${id}?page=${nextPage}&limit=365`);
+      if (data.success) {
+        setSingleGameData((prev) => mergeGameData(prev, data.data || {}));
+        setTotalPages(data.totalPages || 1);
+        setPage(nextPage);
+      }
+    } catch (err) {
+      console.error("Load more failed:", err.message);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
+
+  useEffect(() => {
+    if (id) fetchInitialData();
+  }, [id]);
+
+  if (loading)
+    return (
+      <div
+        style={{
+          textAlign: "center",
+          padding: "40px",
+          fontSize: "18px",
+          color: "#c0392b",
+        }}
+      >
+        Loading game data...
+      </div>
+    );
   if (error) return <div>Error: {error}</div>;
 
   // ------------------------
   //  Group by DATE (YYYY-MM-DD)
   // ------------------------
-  const groupedByDate = {}; // { "2025-11-25": { open: [...], close: [...], day: "Tuesday" } }
+  const groupedByDate = {};
 
   (singleGameData.openNo || []).forEach((item) => {
     if (!Array.isArray(item) || item.length < 3) return;
@@ -78,11 +258,6 @@ const PanelPage = () => {
     groupedByDate[dateKey].day = item[4] || groupedByDate[dateKey].day;
   });
 
-  // ------------------------
-  // Convert groupedByDate -> groupedByDay & groupedByDayOpen
-  // so the component receives { Monday: [...], Tuesday: [...], ... }
-  // each array contains entries in ascending date order.
-  // ------------------------
   const dayNames = [
     "Monday",
     "Tuesday",
@@ -99,7 +274,6 @@ const PanelPage = () => {
     groupedByDayOpen[d] = [];
   });
 
-  // Get sorted date keys (ascending)
   const sortedDateKeys = Object.keys(groupedByDate).sort(
     (a, b) => new Date(a) - new Date(b),
   );
@@ -112,7 +286,6 @@ const PanelPage = () => {
     const open = item.open || ["", "", dateKey, "Open", day];
     const close = item.close || ["", "", dateKey, "Close", day];
 
-    // push the full original arrays (keeps indexes same as server)
     if (!groupedByDayOpen[day]) groupedByDayOpen[day] = [];
     if (!groupedByDay[day]) groupedByDay[day] = [];
 
@@ -120,24 +293,145 @@ const PanelPage = () => {
     groupedByDay[day].push(close);
   });
 
-  // ------------------------
-  // Compute baseDateFromData: earliest date available (safe fallback)
-  // ------------------------
   const baseDateFromData =
     sortedDateKeys.length > 0
       ? sortedDateKeys[0]
       : new Date().toISOString().split("T")[0];
 
-  // ------------------------
-  // SEO description (unchanged)
-  // ------------------------
-  const description = `Dpboss ${singleGameData.name} jodi chart, ${singleGameData.name} jodi chart, old ${singleGameData.name} jodi chart, dpboss ${singleGameData.name} chart, ${singleGameData.name} jodi record, ${singleGameData.name}jodi record, ${singleGameData.name} jodi chart 2015, ${singleGameData.name} jodi chart 2012, ${singleGameData.name} jodi chart 2012 to 2023, ${singleGameData.name} final ank, ${singleGameData.name} jodi chart.co, ${singleGameData.name} jodi chart matka, matka jodi chart ${singleGameData.name}, matka ${singleGameData.name} chart, satta ${singleGameData.name} chart jodi, ${singleGameData.name} state chart, ${singleGameData.name} chart result, डीपी बॉस, सट्टा चार्ट, सट्टा मटका जोड़ी चार्ट, सट्टा मटका जोड़ी चार्ट, ${singleGameData.name} मटका जोड़ी चार्ट, सट्टा मटका ${singleGameData.name} चार्ट जोड़ी, ${singleGameData.name} सट्टा चार्ट, ${singleGameData.name} जोड़ी चार्ट`;
+  const description = `Dpboss ${singleGameData.name} jodi chart, ${singleGameData.name} jodi chart, old ${singleGameData.name} jodi chart, dpboss ${singleGameData.name} chart, ${singleGameData.name} jodi record, ${singleGameData.name}jodi record, ${singleGameData.name} jodi chart 2015, ${singleGameData.name} jodi chart 2012, ${singleGameData.name} jodi chart 2012 to 2023, ${singleGameData.name} final ank, ${singleGameData.name} jodi chart.co, ${singleGameData.name} jodi chart matka, matka jodi chart ${singleGameData.name}, matka ${singleGameData.name} chart, satta ${singleGameData.name} chart jodi, ${singleGameData.name} state chart, ${singleGameData.name} chart result`;
+
+  const todayOpen = singleGameData.openNo?.[0]?.[0] ?? "";
+  const todayClose = singleGameData.closeNo?.[0]?.[0] ?? "";
+  const todayResult = `${todayOpen}-${singleGameData.openNo?.[0]?.[1] ?? ""}${singleGameData.closeNo?.[0]?.[1] ?? ""}-${todayClose}`;
 
   return (
-    <div className="bg-danger border m-1 border-danger text-center ">
+    <div className="bg-danger border m-1 border-danger text-center">
       <Header />
+      {/* Add Range Button — Admin/Agent only */}
+      {(userRole === "Admin" || userRole === "Agent") && (
+        <div style={{ textAlign: "center", margin: "8px 0" }}>
+          <button
+            className="btn btn-dark m-1"
+            onClick={() => setShowRangeModal(true)}
+          >
+            ADD RANGE RESULT
+          </button>
+        </div>
+      )}
+
+      {/* Range Modal */}
+      {showRangeModal && (
+        <div className="AddGameModelMainContainer">
+          <div className="AddGameModelSeconContainer">
+            <h3>Add Range Results</h3>
+
+            <label>Start Date</label>
+            <input
+              type="date"
+              className="form-control"
+              value={rangeStart}
+              onChange={(e) => setRangeStart(e.target.value)}
+            />
+
+            <label>End Date</label>
+            <input
+              type="date"
+              className="form-control"
+              value={rangeEnd}
+              onChange={(e) => setRangeEnd(e.target.value)}
+            />
+
+            <div
+              style={{
+                maxHeight: "300px",
+                overflowY: "auto",
+                marginTop: "10px",
+              }}
+            >
+              {rangeDays.map((d) => {
+                const key = d.toISOString().split("T")[0];
+                const row = rangeData[key] || {
+                  result: { open: "", close: "" },
+                  type: "Open",
+                };
+                return (
+                  <div
+                    key={key}
+                    style={{
+                      display: "flex",
+                      gap: 8,
+                      alignItems: "center",
+                      marginBottom: 8,
+                    }}
+                  >
+                    <div style={{ minWidth: 200, fontSize: "13px" }}>
+                      {key} (
+                      {d.toLocaleDateString("en-US", { weekday: "long" })})
+                    </div>
+                    <input
+                      type="text"
+                      maxLength={5}
+                      placeholder="111-3"
+                      value={
+                        row.type === "Open" ? row.result.open : row.result.close
+                      }
+                      onChange={(e) =>
+                        setRangeData({
+                          ...rangeData,
+                          [key]: {
+                            ...row,
+                            result: {
+                              ...row.result,
+                              [row.type === "Open" ? "open" : "close"]:
+                                e.target.value,
+                            },
+                          },
+                        })
+                      }
+                    />
+                    <select
+                      value={row.type}
+                      onChange={(e) =>
+                        setRangeData({
+                          ...rangeData,
+                          [key]: { ...row, type: e.target.value },
+                        })
+                      }
+                    >
+                      <option value="Open">Open</option>
+                      <option value="Close">Close</option>
+                    </select>
+                    {rangeErrors[key] && (
+                      <span style={{ color: "red", fontSize: "12px" }}>
+                        {rangeErrors[key]}
+                      </span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="mt-3">
+              <button
+                className="btn btn-success"
+                onClick={handleSaveRangeResults}
+              >
+                Save All
+              </button>
+              <button
+                className="btn btn-secondary ms-2"
+                onClick={() => setShowRangeModal(false)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <ToastContainer position="top-right" autoClose={2000} />
       <div
-        className="border m-1 border-danger text-center "
+        className="border m-1 border-danger text-center"
         style={{ backgroundColor: "Pink" }}
       >
         <h3>{singleGameData.name} JODI CHART</h3>
@@ -148,22 +442,11 @@ const PanelPage = () => {
       </div>
 
       <div
-        className="border m-1 border-danger text-center "
+        className="border m-1 border-danger text-center"
         style={{ backgroundColor: "Pink" }}
       >
         <h3>{singleGameData.name}</h3>
-        <h3>
-          {(() => {
-            const today = new Date().toISOString().split("T")[0];
-
-            const todayOpen = singleGameData.openNo[0][0];
-
-            const todayClose = singleGameData.closeNo[0][0];
-            console.log(todayOpen, todayClose);
-
-            return `${todayOpen}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${todayClose}`;
-          })()}
-        </h3>
+        <h3>{todayResult}</h3>
       </div>
 
       <PanelMatkaTable
@@ -173,66 +456,38 @@ const PanelPage = () => {
         baseDateFromData={baseDateFromData}
         noOfDays={singleGameData.noOfDays}
       />
-      <div
-        style={{
-          margin: "20px",
-          display: "flex",
-          gap: "10px",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        {/* First Page */}
-        <button onClick={() => setPage(1)} disabled={page === 1}>
-          {"<<"}
-        </button>
 
-        {/* Previous */}
-        <button
-          onClick={() => setPage((p) => Math.max(p - 1, 1))}
-          disabled={page === 1}
-        >
-          {"<"}
-        </button>
-
-        {/* Page Info */}
-        <span style={{ fontWeight: "bold" }}>
-          {page} / {totalPages}
-        </span>
-
-        {/* Next */}
-        <button
-          onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-          disabled={page === totalPages}
-        >
-          {">"}
-        </button>
-
-        {/* Last Page */}
-        <button
-          onClick={() => setPage(totalPages)}
-          disabled={page === totalPages}
-        >
-          {">>"}
-        </button>
-      </div>
+      {/* Load More Button */}
+      {page < totalPages && (
+        <div style={{ margin: "20px auto", textAlign: "center" }}>
+          <button
+            onClick={handleLoadMore}
+            disabled={loadingMore}
+            style={{
+              backgroundColor: loadingMore ? "#aaa" : "#c0392b",
+              color: "#fff",
+              border: "none",
+              borderRadius: "6px",
+              padding: "12px 36px",
+              fontSize: "15px",
+              fontWeight: "700",
+              cursor: loadingMore ? "not-allowed" : "pointer",
+              letterSpacing: "0.5px",
+              boxShadow: "0 3px 8px rgba(0,0,0,0.2)",
+              transition: "background 0.2s",
+            }}
+          >
+            {loadingMore ? "Loading..." : "Load More"}
+          </button>
+        </div>
+      )}
 
       <div
-        className="border m-1 border-danger text-center "
+        className="border m-1 border-danger text-center"
         style={{ backgroundColor: "Pink" }}
       >
         <h3>{singleGameData.name}</h3>
-        <h3>
-          {(() => {
-            const today = new Date().toISOString().split("T")[0];
-
-            const todayOpen = singleGameData.openNo[0][0];
-
-            const todayClose = singleGameData.closeNo[0][0];
-
-            return `${todayOpen}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${todayClose}`;
-          })()}
-        </h3>
+        <h3>{todayResult}</h3>
       </div>
     </div>
   );
