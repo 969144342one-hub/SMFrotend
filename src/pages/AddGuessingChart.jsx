@@ -51,7 +51,7 @@ export default function AddGuessingChart() {
     const days = ALL_DAYS.slice(0, Number(noOfDays));
     setLoading(true);
 
-    api(`/guessing/${selectedGameId}`)
+    api(`AllGames/guessing/${selectedGameId}`)
       .then((data) => {
         if (data.success && data.data) {
           // Pre-fill from saved data
