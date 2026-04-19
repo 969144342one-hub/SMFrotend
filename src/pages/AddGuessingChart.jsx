@@ -259,7 +259,7 @@ export default function AddGuessingChart() {
                         <input
                           style={inputStyle}
                           maxLength={3}
-                          placeholder="689"
+                          placeholder="000"
                           value={col.panel}
                           onChange={(e) => updateCol(di, ci, "panel", e.target.value)}
                         />
@@ -270,7 +270,7 @@ export default function AddGuessingChart() {
                           style={{ ...inputStyle, width: "36px", fontWeight: "900",
                             fontSize: "18px", color: "#c0392b", textAlign: "center" }}
                           maxLength={1}
-                          placeholder="3"
+                          placeholder="0"
                           value={col.digit}
                           onChange={(e) => updateCol(di, ci, "digit", e.target.value)}
                         />
@@ -280,7 +280,7 @@ export default function AddGuessingChart() {
                         <input
                           style={inputStyle}
                           maxLength={2}
-                          placeholder="35"
+                          placeholder="00"
                           value={col.jodi}
                           onChange={(e) => updateCol(di, ci, "jodi", e.target.value)}
                         />
