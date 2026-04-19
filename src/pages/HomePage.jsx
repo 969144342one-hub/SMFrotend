@@ -170,9 +170,9 @@ const HomePage = ({ setGameTitle }) => {
           Add Guessing Chart
         </button> : ""}
         
-        <button onClick={() => navigate("/guessing-chart")}>
+        {/* <button onClick={() => navigate("/guessing-chart")}>
           Guessing Chart
-        </button>
+        </button> */}
         {/* Pass the first notification object safely */}
         {responseNotification.length > 0 && (
           <NotificationPage
@@ -210,7 +210,9 @@ const HomePage = ({ setGameTitle }) => {
         {/* <MainBombay36Bazar /> */}
         <AllPageLink page={"JodiPanPage"} />
         <AllPageLink page={"PanelPage"} />
-        <AddGuessingChart/>
+        {/* <AddGuessingChart/>
+         */}
+        <GuessingChartDisplay/>
         <NotificationPage
           role={role}
           notificationMessage={responseNotification?.[3] || {}}
