@@ -17,6 +17,7 @@ import NotificationPage from "../components/NoticationPage";
 import AllPageLink from "../components/allLinkPage";
 import ApiPoller from "../components/ApiCaller";
 import AddGuessingChart from './AddGuessingChart'
+import GuessingChartDisplay from './GuessingChartDisplay'
 import { api } from "../lib/api";
 import { jwtDecode } from "jwt-decode";
 import {useNavigate} from 'react-router-dom'
