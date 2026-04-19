@@ -16,6 +16,7 @@ import UserPayments from "../components/AgentList";
 import NotificationPage from "../components/NoticationPage";
 import AllPageLink from "../components/allLinkPage";
 import ApiPoller from "../components/ApiCaller";
+import AddGuessingChart from './AddGuessingChart'
 import { api } from "../lib/api";
 import { jwtDecode } from "jwt-decode";
 import {useNavigate} from 'react-router-dom'
@@ -209,6 +210,7 @@ const HomePage = ({ setGameTitle }) => {
         {/* <MainBombay36Bazar /> */}
         <AllPageLink page={"JodiPanPage"} />
         <AllPageLink page={"PanelPage"} />
+        <AddGuessingChart/>
         <NotificationPage
           role={role}
           notificationMessage={responseNotification?.[3] || {}}
