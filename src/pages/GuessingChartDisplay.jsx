@@ -125,7 +125,7 @@ function GameChartSection({ chart }) {
                           <div style={{ display: "inline-flex", alignItems: "center", gap: "2px" }}>
                             {/* Big digit */}
                             <span style={{
-                              fontSize: "28px", fontWeight: "900",
+                              fontSize: "32px", fontWeight: "900",
                               color: "#000", lineHeight: 1,
                             }}>
                               {col.digit || "-"}
@@ -135,13 +135,13 @@ function GameChartSection({ chart }) {
                             <div style={{ display: "flex", flexDirection: "column",
                               alignItems: "flex-start", marginLeft: "2px" }}>
                               <span style={{
-                                fontSize: "12px", fontWeight: "700",
-                                color: "#1a237e", lineHeight: 1.3,
+                                fontSize: "16px", fontWeight: "700",
+                                color: "#1a237e", lineHeight: 1.3
                               }}>
                                 {col.panel || "---"}
                               </span>
                               <span style={{
-                                fontSize: "12px", fontWeight: "700",
+                                fontSize: "16px", fontWeight: "700",
                                 color: "#c0392b", lineHeight: 1.3,
                               }}>
                                 {col.jodi || "--"}
