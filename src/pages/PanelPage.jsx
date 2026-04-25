@@ -7,6 +7,73 @@ import { api } from "../lib/api";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ReactDOM from "react-dom"; 
+
+
+
+const handleRefresh = () => {
+  // Refresh the current page
+  window.location.reload();
+};
+
+const handleCall = () => {
+  // Opens dialer with number
+  window.location.href =
+    "https://api.whatsapp.com/send/?phone=919203516304&text=Welcome%21+Please+message+us+or+call+on+919691443421&type=phone_number&app_absent=0"; // ← replace with your number
+};
+const StaticButtons = () => {
+  // Use a React Portal to render the buttons outside the normal DOM hierarchy.
+  return ReactDOM.createPortal(
+    <div
+      style={{
+        position: "fixed",
+        bottom: "20px",
+        right: "10px",
+        zIndex: 1000,
+        display: "flex",
+        justifyContent: "space-between",
+        flexDirection: "row",
+        gap: "10px",
+        width: "95%",
+      }}
+    >
+      {/* 📞 Dial Pad Button */}
+      <button
+        onClick={handleCall}
+        style={{
+          padding: "8px 16px",
+          backgroundColor: "#4CAF50",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+          boxShadow: "0 2px 5px rgba(0,0,0,0.3)",
+          fontSize: "12px",
+        }}
+      >
+        📞 WhatApp Admin
+      </button>
+
+      {/* 🔄 Refresh Page Button */}
+      <button
+        onClick={handleRefresh}
+        style={{
+          padding: "10px 20px",
+          backgroundColor: "#008CBA",
+          color: "white",
+          border: "none",
+          borderRadius: "5px",
+          cursor: "pointer",
+          boxShadow: "0 2px 5px rgba(0,0,0,0.3)",
+          fontSize: "12px",
+        }}
+      >
+        🔄 Refresh Page
+      </button>
+    </div>,
+    document.body,
+  );
+};
 
 const PanelPage = () => {
   const [singleGameData, setSingleGameData] = useState({
@@ -307,6 +374,7 @@ const PanelPage = () => {
   return (
     <div className="bg-danger border m-1 border-danger text-center">
       <Header />
+      <StaticButtons/>
       {/* Add Range Button — Admin/Agent only */}
       {(userRole === "Admin" || userRole === "Agent") && (
         <div style={{ textAlign: "center", margin: "8px 0" }}>
