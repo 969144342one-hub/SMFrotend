@@ -1,5 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from "./pages/HomePage";
+import AboutUs from "./pages/AboutUs";
+import ContactUs from "./pages/ContactUs";
 import LoginPage from "./pages/LoginPage";
 import JodiPanPage from "./pages/JodiPanPage";
 import AllUsersPage from "./pages/AllUsers";
@@ -24,7 +26,11 @@ export default function App() {
           {/* Login */}
           <Route path="/login" element={<LoginPage />} />
 
+          
+
           {/* Other pages */}
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/contact-us" element={<ContactUs />} />
           <Route path="/JodiPanPage/:id" element={<JodiPanPage />} />
           <Route path="/PanelPage/:id" element={<PanelPage />} />
           <Route path="/guessing-chart" element={<GuessingChartDisplay />} />
