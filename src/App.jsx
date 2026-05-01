@@ -2,6 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import HomePage from "./pages/HomePage";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
+import TermsConditions from "./TermsConditions";
+import PrivacyPolicy from "./PrivacyPolicy";
 import LoginPage from "./pages/LoginPage";
 import JodiPanPage from "./pages/JodiPanPage";
 import AllUsersPage from "./pages/AllUsers";
@@ -31,6 +33,8 @@ export default function App() {
           {/* Other pages */}
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/contact-us" element={<ContactUs />} />
+          <Route path="/terms-and-conditions" element={<TermsConditions />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/JodiPanPage/:id" element={<JodiPanPage />} />
           <Route path="/PanelPage/:id" element={<PanelPage />} />
           <Route path="/guessing-chart" element={<GuessingChartDisplay />} />
