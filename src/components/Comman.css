@@ -1108,3 +1108,165 @@
   color: white;
   align-items: center;
 }
+
+/* Container */
+.jpn-container {
+  max-width: 500px;
+  margin-bottom: 60px;
+  /* padding: 20px; */
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Title */
+.jpn-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #2c2c2c;
+}
+
+/* Form */
+.jpn-form {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+/* Form Group */
+.jpn-form-group {
+  margin-bottom: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label */
+.jpn-label {
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #555;
+}
+
+/* Input */
+.jpn-input {
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+/* Input Focus */
+.jpn-input:focus {
+  border-color: #4a90e2;
+  outline: none;
+  box-shadow: 0 0 4px rgba(74, 144, 226, 0.3);
+}
+.jpn-message-text{
+  color: white;
+}
+/* Button */
+.jpn-button {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #4a90e2, #007bff);
+  color: white;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+/* Button Hover */
+.jpn-button:hover {
+  background: linear-gradient(135deg, #3b7bd1, #0056b3);
+}
+
+/* Disabled */
+.jpn-button:disabled {
+  background: #aaa;
+  cursor: not-allowed;
+}
+
+/* Card */
+.jpn-card {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 12px;
+  background: #f7f9fc;
+  border-left: 5px solid #4a90e2;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+/* Card Title */
+.jpn-card-title {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+/* Text */
+.jpn-card p {
+  margin: 6px 0;
+  color: #444;
+}
+
+/* Full Button */
+.jpn-full-btn {
+  display: block;
+  text-decoration: none;
+  margin-top: 20px;
+}
+
+/* Inner Box */
+.jpn-btn-content {
+  border: 2px solid red;
+  background: #f1f1f1;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+  transition: 0.2s ease;
+}
+
+/* Hover effect */
+.jpn-full-btn:hover .jpn-btn-content {
+  background: #e9e9e9;
+  transform: scale(1.01);
+}
+
+/* Message */
+.jpn-btn-text {
+  margin-bottom: 10px;
+  color: #111;
+}
+
+/* Bottom row */
+.jpn-btn-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #25D366;
+}
+
+/* Label */
+.jpn-btn-label {
+  font-size: 14px;
+}
+
+.cell {
+  position: relative;
+}
+
+.edit-cell-btn {
+  position: absolute;
+  top: 2px;
+  margin: 15px;
+  right: 2px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0;
+  line-height: 1;
+}

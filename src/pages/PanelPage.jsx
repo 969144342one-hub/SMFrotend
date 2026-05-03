@@ -7,9 +7,10 @@ import { api } from "../lib/api";
 import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ReactDOM from "react-dom"; 
+import ReactDOM from "react-dom";
+// import JodiPannelNotification from ''
 
-
+import JodiPannelNotification from '../components/jodiPannelNotification'
 
 const handleRefresh = () => {
   // Refresh the current page
@@ -90,12 +91,18 @@ const PanelPage = () => {
 
   const token = localStorage.getItem("authToken");
   let userRole = null;
+  let userName = null;
+
   if (token) {
     try {
       const decoded = jwtDecode(token);
       userRole = decoded.role;
+      userName = decoded.name || decoded.userName || decoded.username;
     } catch (err) {}
   }
+
+  const canEditResults =
+    userRole === "Admin" || userName === singleGameData.owner;
 
   // Range Modal States
   const [showRangeModal, setShowRangeModal] = useState(false);
@@ -104,6 +111,7 @@ const PanelPage = () => {
   const [rangeDays, setRangeDays] = useState([]);
   const [rangeData, setRangeData] = useState({});
   const [rangeErrors, setRangeErrors] = useState({});
+  const [editModal, setEditModal] = useState(null);
 
   const getDatesBetween = (start, end) => {
     const s = new Date(start);
@@ -177,6 +185,54 @@ const PanelPage = () => {
     return { ok: true, mainDigits, providedCheck };
   };
 
+  const handleSaveCellResult = async () => {
+    try {
+      const openPayload = [
+        editModal.openPanel,
+        editModal.openDigit,
+        editModal.dateISOString,
+        "Open",
+        editModal.dayName,
+      ];
+
+      const closePayload = [
+        editModal.closePanel,
+        editModal.closeDigit,
+        editModal.dateISOString,
+        "Close",
+        editModal.dayName,
+      ];
+
+      if (editModal.openPanel && editModal.openDigit) {
+        const openRes = await api(`/AllGames/updateGame/${id}`, {
+          method: "PUT",
+          body: JSON.stringify({ resultNo: openPayload }),
+        });
+
+        if (!openRes.success) {
+          throw new Error(openRes.message || "Open result failed");
+        }
+      }
+
+      if (editModal.closePanel && editModal.closeDigit) {
+        const closeRes = await api(`/AllGames/updateGame/${id}`, {
+          method: "PUT",
+          body: JSON.stringify({ resultNo: closePayload }),
+        });
+
+        if (!closeRes.success) {
+          throw new Error(closeRes.message || "Close result failed");
+        }
+      }
+
+      toast.success("Result updated successfully");
+      setEditModal(null);
+      fetchInitialData();
+    } catch (err) {
+      toast.error("Error: " + err.message);
+    }
+  };
+
   const handleSaveRangeResults = async () => {
     if (!rangeDays.length) {
       toast.error("Select a date range");
@@ -226,7 +282,7 @@ const PanelPage = () => {
           r.type,
           r.dayName,
         ];
-        const res = await api(`/AllGames/updateGame/${id}`, {
+        const res = await api(`/AllGames/updateGameFromPaneel/${id}`, {
           method: "PUT",
           body: JSON.stringify({ resultNo: payload }),
         });
@@ -374,7 +430,7 @@ const PanelPage = () => {
   return (
     <div className="bg-danger border m-1 border-danger text-center">
       <Header />
-      <StaticButtons/>
+      <StaticButtons />
       {/* Add Range Button — Admin/Agent only */}
       {(userRole === "Admin" || userRole === "Agent") && (
         <div style={{ textAlign: "center", margin: "8px 0" }}>
@@ -517,12 +573,21 @@ const PanelPage = () => {
         <h3>{todayResult}</h3>
       </div>
 
+      {/* <PanelMatkaTable
+        groupedData={groupedByDay}
+        groupedByDayOpen={groupedByDayOpen}
+        gameName={singleGameData.name}
+        baseDateFromData={baseDateFromData}
+        noOfDays={singleGameData.noOfDays}
+      /> */}
       <PanelMatkaTable
         groupedData={groupedByDay}
         groupedByDayOpen={groupedByDayOpen}
         gameName={singleGameData.name}
         baseDateFromData={baseDateFromData}
         noOfDays={singleGameData.noOfDays}
+        canEditResults={canEditResults}
+        onEditResult={(cell) => setEditModal(cell)}
       />
 
       {/* Load More Button */}
@@ -557,6 +622,77 @@ const PanelPage = () => {
         <h3>{singleGameData.name}</h3>
         <h3>{todayResult}</h3>
       </div>
+      {editModal && (
+        <div className="AddGameModelMainContainer">
+          <div className="AddGameModelSeconContainer">
+            <h3>Edit Result</h3>
+
+            <p>
+              {editModal.dateKey} ({editModal.dayName})
+            </p>
+
+            <label>Open Panel</label>
+            <input
+              type="text"
+              className="form-control"
+              value={editModal.openPanel}
+              onChange={(e) =>
+                setEditModal({ ...editModal, openPanel: e.target.value })
+              }
+            />
+
+            <label>Open Digit</label>
+            <input
+              type="text"
+              className="form-control"
+              maxLength={1}
+              value={editModal.openDigit}
+              onChange={(e) =>
+                setEditModal({ ...editModal, openDigit: e.target.value })
+              }
+            />
+
+            <label>Close Panel</label>
+            <input
+              type="text"
+              className="form-control"
+              value={editModal.closePanel}
+              onChange={(e) =>
+                setEditModal({ ...editModal, closePanel: e.target.value })
+              }
+            />
+
+            <label>Close Digit</label>
+            <input
+              type="text"
+              className="form-control"
+              maxLength={1}
+              value={editModal.closeDigit}
+              onChange={(e) =>
+                setEditModal({ ...editModal, closeDigit: e.target.value })
+              }
+            />
+
+            <div className="mt-3">
+              <button
+                className="btn btn-success"
+                onClick={handleSaveCellResult}
+              >
+                Save
+              </button>
+
+              <button
+                className="btn btn-secondary ms-2"
+                onClick={() => setEditModal(null)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      <JodiPannelNotification/>
     </div>
   );
 };

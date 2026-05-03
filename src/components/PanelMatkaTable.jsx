@@ -1,6 +1,24 @@
 import React from "react";
 
 const styles = `
+
+  .cell {
+  position: relative;
+}
+
+.edit-cell-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 0;
+  line-height: 1;
+}
+
+
   .panel-table-wrapper {
     width: 100%;
     padding: 0 2px;
@@ -217,6 +235,8 @@ export default function PanelMatkaTable({
   baseDateFromData,
   gameName = "",
   noOfDays = 7,
+  canEditResults = false,
+  onEditResult,
 }) {
   const nd = Number(noOfDays);
   let daysCount = 7;
@@ -311,15 +331,32 @@ export default function PanelMatkaTable({
     const weekStartStr = formatDateShort(startOfWeek);
     const weekEndStr = formatDateShort(endOfWeek);
 
-    const rowData = daysShort.slice(0, daysCount).map((shortDay) => {
+    const rowData = daysShort.slice(0, daysCount).map((shortDay, dayOffset) => {
       const fullDay = Object.keys(dayMap).find((k) => dayMap[k] === shortDay);
       const weekEntry = weekData[weekIndex] || {};
       const dayEntry = weekEntry[fullDay] || {};
       const openData = dayEntry.open || ["", "", ""];
       const closeData = dayEntry.close || ["", "", ""];
+
+      const cellDate = new Date(startOfWeek);
+      cellDate.setDate(startOfWeek.getDate() + dayOffset);
+
+      const dateISOString =
+        openData[2] || closeData[2] || cellDate.toISOString();
+
+      const dateKey = String(dateISOString).split("T")[0];
+
       const jodi =
         openData[1] && closeData[1] ? `${openData[1]}${closeData[1]}` : "";
-      return { openPanel: openData, jodi, closePanel: closeData };
+
+      return {
+        openPanel: openData,
+        jodi,
+        closePanel: closeData,
+        dateKey,
+        dateISOString,
+        dayName: fullDay,
+      };
     });
 
     return { weekStartStr, weekEndStr, rowData };
@@ -336,7 +373,10 @@ export default function PanelMatkaTable({
         <button
           className="go-bottom"
           onClick={() =>
-            window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" })
+            window.scrollTo({
+              top: document.documentElement.scrollHeight,
+              behavior: "smooth",
+            })
           }
         >
           Go to Bottom
@@ -371,42 +411,73 @@ export default function PanelMatkaTable({
                   </td>
 
                   {/* Day columns */}
-                  {row.rowData.map(({ openPanel, jodi, closePanel }, colIndex) => (
-                    <td key={colIndex} className="cell">
-                      {openPanel[0] && closePanel[0] ? (
-                        <div className="data-of-jodi-open-close">
-                          {/* Open digits — stacked vertically on LEFT */}
-                          <div className="panel-left">
-                            {String(openPanel[0])
-                              .split("")
-                              .map((d, i) => (
-                                <span key={i}>{d}</span>
-                              ))}
-                          </div>
-
-                          {/* Jodi — CENTER */}
-                          <div
-                            className={`big-jodi ${
-                              redNumbers.includes(jodi) ? "red" : ""
-                            }`}
+                  {row.rowData.map(
+                    (
+                      {
+                        openPanel,
+                        jodi,
+                        closePanel,
+                        dateKey,
+                        dateISOString,
+                        dayName,
+                      },
+                      colIndex,
+                    ) => (
+                      <td key={colIndex} className="cell">
+                        {canEditResults && (
+                          <button
+                            type="button"
+                            className="edit-cell-btn"
+                            onClick={() =>
+                              onEditResult({
+                                dateKey,
+                                dateISOString,
+                                dayName,
+                                openPanel: openPanel[0] || "",
+                                openDigit: openPanel[1] || "",
+                                closePanel: closePanel[0] || "",
+                                closeDigit: closePanel[1] || "",
+                              })
+                            }
                           >
-                            {jodi || "-"}
-                          </div>
+                            ✏️
+                          </button>
+                        )}
+                        {openPanel[0] && closePanel[0] ? (
+                          <div className="data-of-jodi-open-close">
+                            {/* Open digits — stacked vertically on LEFT */}
+                            <div className="panel-left">
+                              {String(openPanel[0])
+                                .split("")
+                                .map((d, i) => (
+                                  <span key={i}>{d}</span>
+                                ))}
+                            </div>
 
-                          {/* Close digits — stacked vertically on RIGHT */}
-                          <div className="panel-right">
-                            {String(closePanel[0])
-                              .split("")
-                              .map((d, i) => (
-                                <span key={i}>{d}</span>
-                              ))}
+                            {/* Jodi — CENTER */}
+                            <div
+                              className={`big-jodi ${
+                                redNumbers.includes(jodi) ? "red" : ""
+                              }`}
+                            >
+                              {jodi || "-"}
+                            </div>
+
+                            {/* Close digits — stacked vertically on RIGHT */}
+                            <div className="panel-right">
+                              {String(closePanel[0])
+                                .split("")
+                                .map((d, i) => (
+                                  <span key={i}>{d}</span>
+                                ))}
+                            </div>
                           </div>
-                        </div>
-                      ) : (
-                        <div className="empty-slot">-</div>
-                      )}
-                    </td>
-                  ))}
+                        ) : (
+                          <div className="empty-slot">-</div>
+                        )}
+                      </td>
+                    ),
+                  )}
                 </tr>
               ))}
             </tbody>

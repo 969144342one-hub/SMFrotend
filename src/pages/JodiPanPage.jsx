@@ -9,6 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { jwtDecode } from "jwt-decode";
 import * as XLSX from "xlsx";
 import ReactDOM from "react-dom"; 
+import JodiPannelNotification from '../components/jodiPannelNotification'
 
 
 
@@ -107,6 +108,9 @@ const JodiPanPage = () => {
   const [rangeDays, setRangeDays] = useState([]);
   const [rangeData, setRangeData] = useState({});
   const [rangeErrors, setRangeErrors] = useState({});
+
+  const redNumbers = ["44", "50", "38", "99", "61", "05", "77", "88", "66"];
+
 
   const getDatesBetween = (start, end) => {
     const s = new Date(start);
@@ -633,6 +637,7 @@ const JodiPanPage = () => {
           </div>
         </div>
       )}
+      <JodiPannelNotification/>
       <ToastContainer />
     </div>
   );

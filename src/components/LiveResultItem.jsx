@@ -17,6 +17,7 @@ const LiveResultItem = ({ title, numbers, openTime, closeTime }) => {
       >
         Refresh
       </button>
+      
     </div>
   );
 };

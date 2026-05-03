@@ -209,11 +209,11 @@ const HomePage = ({ setGameTitle }) => {
           notificationMessage={responseNotification?.[4] || {}}
         /> */}
         {/* <MainBombay36Bazar /> */}
+        <GuessingChartDisplay/>
         <AllPageLink page={"JodiPanPage"} />
         <AllPageLink page={"PanelPage"} />
         {/* <AddGuessingChart/>
          */}
-        <GuessingChartDisplay/>
         <NotificationPage
           role={role}
           notificationMessage={responseNotification?.[3] || {}}
