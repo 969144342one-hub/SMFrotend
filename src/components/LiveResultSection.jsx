@@ -1,11 +1,40 @@
 import React, { useEffect, useState } from "react";
 import LiveResultItem from "./LiveResultItem";
 import { api } from "../lib/api";
+import { jwtDecode } from "jwt-decode";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LiveResultSection = () => {
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const token = localStorage.getItem("authToken");
+
+  const [editGame, setEditGame] = useState({
+    id: "",
+    resultNo: "",
+    openOrClose: "",
+    day: "",
+    date: "",
+  });
+
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [nameForPop, setNameForPop] = useState("");
+
+  let username = null;
+  let role = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      role = decoded.role;
+      username = decoded.username;
+    } catch (err) {
+      console.error("Invalid token", err);
+    }
+  }
 
   function isOlderThan12Hours(dateString) {
     const updated = new Date(dateString);
@@ -32,11 +61,113 @@ const LiveResultSection = () => {
       weekday: "long",
     });
 
-    const allowedDays = WEEK_DAYS.slice(0, noOfDays-1);
+    const allowedDays = WEEK_DAYS.slice(0, noOfDays - 1);
 
     return allowedDays.includes(today);
   }
 
+  const handleEditClick = (game) => {
+    const todayDate = new Date();
+    const dayName = new Date().toLocaleDateString("en-US", {
+      weekday: "long",
+    });
+
+    setEditGame({
+      id: game.id,
+      resultNo: "",
+      openOrClose: "",
+      day: dayName,
+      date: todayDate,
+    });
+
+    setNameForPop(game.title);
+    setShowEditModal(true);
+  };
+
+  const handleUpdateGame = async (e) => {
+    e.preventDefault();
+
+    const gameId = editGame.id;
+    const inputValue = editGame.resultNo || "";
+    const parts = inputValue.split("-").map((num) => num.trim());
+
+    if (
+      inputValue.length === 5 &&
+      parts[0].length !== 3 &&
+      !inputValue.includes("-")
+    ) {
+      toast.error("Invalid format. Please enter a number like 123-7.");
+      return;
+    }
+
+    if (parts.length === 0 || !/^\d+$/.test(parts[0])) {
+      toast.error("Invalid format. Please enter a number like 123-7.");
+      return;
+    }
+
+    const mainNumber = parts[0];
+    const providedCheckDigit = parts[1];
+
+    if (mainNumber.length >= 3) {
+      const d1 = parseInt(mainNumber[0], 10);
+      const d2 = parseInt(mainNumber[1], 10);
+      const d3 = parseInt(mainNumber[2], 10);
+
+      const firstDigit = d1 === 0 ? 10 : d1;
+      const secondDigit = d2 === 0 ? 10 : d2;
+      const thirdDigit = d3 === 0 ? 10 : d3;
+
+      if (!(firstDigit <= secondDigit && secondDigit <= thirdDigit)) {
+        toast.error(
+          "Invalid number Please check or contact operator : First < Second < Third",
+        );
+        return;
+      }
+
+      const lastThree = mainNumber.slice(-3).split("").map(Number);
+      const sum = lastThree.reduce((a, b) => a + b, 0);
+      const expectedCheckDigit = sum % 10;
+
+      if (
+        providedCheckDigit &&
+        parseInt(providedCheckDigit, 10) !== expectedCheckDigit
+      ) {
+        toast.error(
+          `Invalid number: check digit should be ${expectedCheckDigit} (sum of last 3 digits).`,
+        );
+        return;
+      }
+    }
+
+    const newResultArray = [mainNumber];
+
+    if (providedCheckDigit) newResultArray.push(providedCheckDigit);
+
+    if (editGame.openOrClose) {
+      newResultArray.push(editGame.date, editGame.openOrClose, editGame.day);
+    }
+
+    try {
+      const updateData = await api(`/AllGames/updateGame/${gameId}`, {
+        method: "PUT",
+        body: JSON.stringify({ resultNo: newResultArray }),
+      });
+
+      if (updateData.success) {
+        toast.success("Game Number updated successfully!");
+        setShowEditModal(false);
+
+        // refresh live data
+        setLoading(true);
+        window.location.reload();
+      } else {
+        toast.error("Failed to update game: " + updateData.message);
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Error updating game");
+    }
+  };
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -50,27 +181,27 @@ const LiveResultSection = () => {
             if (typeof game.isActive === "boolean") {
               return game.isActive === true;
             }
-        
+
             // If backend sends status field
             if (typeof game.status === "string") {
               return game.status.toUpperCase() !== "INACTIVE";
             }
-            
+
             if (!isGameAllowedToday(game.noOfDays)) return false;
             // If no flag, treat as active by default
             return true;
           });
-        
+
           // 🔹 2) Then format only active games
           const formatted = activeGames.map((game) => {
             const now = new Date();
-        
+
             const openTimeFromGame = game.startTime || "";
             const closeTimeFromGame = game.endTime || "";
             const openDate = new Date(game.openNo?.[0]?.[2]);
             const closeDate = new Date(game.closeNo?.[0]?.[2]);
             const lastUpdate = openDate > closeDate ? openDate : closeDate;
-        
+
             // HANDLE LOADING BEFORE START TIME
             let startTime = null;
             if (game.startTime) {
@@ -81,10 +212,10 @@ const LiveResultSection = () => {
                 now.getDate(),
                 hours,
                 minutes,
-                0
+                0,
               );
             }
-        
+
             if (startTime && now < startTime) {
               return {
                 title: game.name,
@@ -94,11 +225,11 @@ const LiveResultSection = () => {
                 updatedAt: lastUpdate,
               };
             }
-        
+
             const lastOpen = game.openNo?.length ? game.openNo[0] : null;
-            
-            const lastClose = game.closeNo?.length ? game.closeNo[0] : null; 
-        
+
+            const lastClose = game.closeNo?.length ? game.closeNo[0] : null;
+
             // if (!lastOpen && !lastClose) {
             //   return {
             //     title: game.name,
@@ -108,17 +239,17 @@ const LiveResultSection = () => {
             //     updatedAt: lastUpdate,
             //   };
             // }
-        
+
             const openMain = lastOpen?.[0] || "";
             const openDigit = lastOpen?.[1] || "";
             const openDay = lastOpen?.[4] || "";
-        
+
             const closeMain = lastClose?.[0] || "";
             const closeDigit = lastClose?.[1] || "";
             const closeDay = lastClose?.[4] || "";
-        
+
             let lastResult = `${openMain}-${openDigit}${closeDigit}-${closeMain}`;
-        
+
             if (
               lastOpen &&
               lastClose &&
@@ -137,21 +268,24 @@ const LiveResultSection = () => {
             ) {
               lastResult = `${closeMain}-${closeDigit}`;
             }
-        
+
             return {
+              id: game._id,
               title: game.name,
+              owner: game.owner,
+              status: game.status,
+              validDate: game.valid_date,
               numbers: lastResult,
               openTime: openTimeFromGame,
               closeTime: closeTimeFromGame,
               updatedAt: lastUpdate,
             };
           });
-        
+
           setResults(formatted);
         } else {
           setResults([]);
         }
-
       } catch (err) {
         console.error("Error fetching live results:", err);
         setError("Failed to fetch live results. Please try again later.");
@@ -164,13 +298,10 @@ const LiveResultSection = () => {
     fetchResults();
   }, []);
   // console.log(results);
-  
 
   if (loading) {
     return (
-      <div
-        className="bg-warning border border-white Live-Result-section-main-container bg-[#ffea00]"
-      >
+      <div className="bg-warning border border-white Live-Result-section-main-container bg-[#ffea00]">
         <div className="bg-pink text-white text-center  mb-4 fw-bold Live-Result-Heading">
           <h2>💥LIVE RESULT💥</h2>
         </div>
@@ -191,26 +322,104 @@ const LiveResultSection = () => {
         <h3 style={{ fontSize: "1.2rem", margin: 0 }}>💥LIVE RESULT💥</h3>
       </div>
 
-      <div className="" style={{width:"100%", margin:"0px"}}>
+      <div className="" style={{ width: "100%", margin: "0px" }}>
         {error ? (
-          <p className="text-center text-danger"  style={{ backgroundColor: "black" }}>{error}</p>
+          <p
+            className="text-center text-danger"
+            style={{ backgroundColor: "black" }}
+          >
+            {error}
+          </p>
         ) : results.length > 0 ? (
           results.map((item, idx) => (
-            <div className="col-md-4 mb-0 d-flex justify-content-center" key={idx} style={{ width:"100%"}}>
+            <div
+              className="col-md-4 mb-0 d-flex justify-content-center"
+              key={idx}
+              style={{ width: "100%" }}
+            >
               <LiveResultItem
                 title={item.title}
-                numbers={
-                  item.numbers
-                }
+                numbers={item.numbers}
                 openTime={item.openTime}
                 closeTime={item.closeTime}
               />
+              
+              <button
+                className="btn btn-primary btn-sm mt-1"
+                onClick={() => handleEditClick(item)}
+                hidden={
+                  !(
+                    role === "Admin" ||
+                    (role === "Agent" && item.owner === username)
+                  )
+                }
+                disabled={
+                  item.validDate
+                    ? new Date(item.validDate).getTime() < Date.now()
+                    : false
+                }
+              >
+                EDIT
+              </button>
             </div>
           ))
         ) : (
           <p className="text-center">No live results found.</p>
         )}
       </div>
+      {showEditModal && (
+        <div className="AddGameModelMainContainer overflow-auto">
+          <div className="AddGameModelSeconContainer">
+            <h2>{nameForPop}</h2>
+
+            <form onSubmit={handleUpdateGame}>
+              <div className="form-group">
+                <label htmlFor="openOrClose">Action</label>
+                <select
+                  id="openOrClose"
+                  value={editGame.openOrClose}
+                  onChange={(e) =>
+                    setEditGame({ ...editGame, openOrClose: e.target.value })
+                  }
+                  required
+                >
+                  <option value="">Select Action</option>
+                  <option value="Open">Open</option>
+                  <option value="Close">Close</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Result No</label>
+                <input
+                  type="text"
+                  placeholder="e.g. 111-3"
+                  value={editGame.resultNo}
+                  onChange={(e) =>
+                    setEditGame({ ...editGame, resultNo: e.target.value })
+                  }
+                />
+              </div>
+
+              <div className="button-group mt-3">
+                <button type="submit" className="btn btn-primary">
+                  Save
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-secondary ms-2"
+                  onClick={() => setShowEditModal(false)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <ToastContainer position="top-right" autoClose={2000} />
     </div>
   );
 };

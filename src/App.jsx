@@ -2,8 +2,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-d
 import HomePage from "./pages/HomePage";
 import AboutUs from "./pages/AboutUs";
 import ContactUs from "./pages/ContactUs";
-import TermsConditions from "./TermsConditions";
-import PrivacyPolicy from "./PrivacyPolicy";
+import TermsConditions from "./pages/TermsConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import LoginPage from "./pages/LoginPage";
 import JodiPanPage from "./pages/JodiPanPage";
 import AllUsersPage from "./pages/AllUsers";

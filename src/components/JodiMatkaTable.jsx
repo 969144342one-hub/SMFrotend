@@ -36,6 +36,7 @@ export default function MatkaTable({
       .map((n) => parseInt(n, 10));
     return new Date(y, m - 1, d, 0, 0, 0, 0);
   };
+  // const redNumbers = ["44", "50", "38", "99", "61", "05", "77", "88", "66"];
 
   // Build dateMap: dateKey(YYYY-MM-DD) => { day: weekday, open, close }
   const buildDateMap = () => {
@@ -45,7 +46,7 @@ export default function MatkaTable({
       let raw = item[2];
       if (!raw) {
         const maybe = item.find(
-          (x) => typeof x === "string" && /\d{4}-\d{2}-\d{2}/.test(x)
+          (x) => typeof x === "string" && /\d{4}-\d{2}-\d{2}/.test(x),
         );
         raw = maybe || null;
       }
@@ -115,7 +116,7 @@ export default function MatkaTable({
     .map(Number)
     .sort((a, b) => a - b);
 
-  const redNumbers = ["44", "50", "38", "99", "61", "05", "77", "88", "66"];
+  const redNumbers = ["44", "50", "38", "99", "61", "05", "77", "88", "66", 46,67];
 
   // build rows: for each week index create `daysCount` cells (local)
   const rows = weekIndexes.map((wIdx) => {
@@ -201,9 +202,16 @@ export default function MatkaTable({
                     className={shouldHighlight ? "red" : ""}
                     style={{ textAlign: "center", padding: "6px" }}
                   >
-                    <div style={{ fontSize: "28px", fontWeight: 700, color:"white" }}>
+                    <div
+                      style={{
+                        fontSize: "28px",
+                        fontWeight: 700,
+                        color: shouldHighlight ? "red" : "white",
+                      }}
+                    >
                       {cell.text || "-"}
                     </div>
+
                     {/* uncomment to debug date: <div style={{ fontSize: 10 }}>{cell.dateKey || ""}</div> */}
                   </td>
                 );

@@ -1,19 +1,37 @@
-// src/pages/AddGuessingChart.jsx
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import { api } from "../lib/api";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const ALL_DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const ALL_DAYS = [
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+  "Sunday",
+];
+
 const HINDI_DAYS = {
-  Monday: "सोम", Tuesday: "मंगल", Wednesday: "बुध",
-  Thursday: "गुरु", Friday: "शुक्र", Saturday: "शनि", Sunday: "रवि",
+  Monday: "सोम",
+  Tuesday: "मंगल",
+  Wednesday: "बुध",
+  Thursday: "गुरु",
+  Friday: "शुक्र",
+  Saturday: "शनि",
+  Sunday: "रवि",
 };
-const NUM_COLS = 4; // 4 columns per day row (as per image)
+
+const NUM_COLS = 4;
 
 const emptyCol = () => ({ panel: "", jodi: "", digit: "" });
-const emptyEntry = (day) => ({ day, columns: Array.from({ length: NUM_COLS }, emptyCol) });
+
+const emptyEntry = (day) => ({
+  day,
+  columns: Array.from({ length: NUM_COLS }, emptyCol),
+});
 
 const getMonday = (date) => {
   const d = new Date(date);
@@ -23,94 +41,151 @@ const getMonday = (date) => {
   return d.toISOString().split("T")[0];
 };
 
+const normalizeEntries = (savedEntries = [], days = []) => {
+  return days.map((day) => {
+    const existing = savedEntries.find((e) => e.day === day);
+
+    if (!existing) {
+      return emptyEntry(day);
+    }
+
+    const cols = Array.from({ length: NUM_COLS }, (_, index) => ({
+      ...emptyCol(),
+      ...(existing.columns?.[index] || {}),
+    }));
+
+    return {
+      day,
+      columns: cols,
+    };
+  });
+};
+
 export default function AddGuessingChart() {
   const [games, setGames] = useState([]);
   const [selectedGameId, setSelectedGameId] = useState("");
   const [noOfDays, setNoOfDays] = useState(7);
   const [weekStartDate, setWeekStartDate] = useState(getMonday(new Date()));
   const [entries, setEntries] = useState([]);
+  const [panelColor, setPanelColor] = useState("#ffe0bd");
+  const [textColor, setTextColor] = useState("#c0392b");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Fetch all games from existing API
   useEffect(() => {
     const fetchGames = async () => {
       try {
         const data = await api("/AllGames/");
-        if (data.success) setGames(data.data.filter((g) => g.status === "Active"));
+
+        if (data.success) {
+          setGames(data.data.filter((g) => g.status === "Active"));
+        }
       } catch (err) {
         toast.error("Failed to load games");
       }
     };
+
     fetchGames();
   }, []);
 
-  // When game or noOfDays changes, rebuild entries (or load existing)
   useEffect(() => {
-    if (!selectedGameId) return;
-    const days = ALL_DAYS.slice(0, Number(noOfDays));
-    setLoading(true);
+    if (!selectedGameId || !weekStartDate) return;
 
-    api(`AllGames/guessing/${selectedGameId}`)
-      .then((data) => {
+    const fetchGuessingChart = async () => {
+      setLoading(true);
+
+      try {
+        const selectedGame = games.find((g) => g._id === selectedGameId);
+
+        const data = await api(
+          `/AllGames/guessing/${selectedGameId}?weekStartDate=${weekStartDate}`,
+        );
+
         if (data.success && data.data) {
-          // Pre-fill from saved data
           const saved = data.data;
-          const filled = days.map((day) => {
-            const existing = (saved.entries || []).find((e) => e.day === day);
-            if (existing) {
-              // Ensure exactly NUM_COLS columns
-              const cols = [...(existing.columns || [])];
-              while (cols.length < NUM_COLS) cols.push(emptyCol());
-              return { day, columns: cols.slice(0, NUM_COLS) };
-            }
-            return emptyEntry(day);
-          });
-          setEntries(filled);
-          setNoOfDays(saved.noOfDays || noOfDays);
+          const daysCount = Number(
+            saved.noOfDays || selectedGame?.noOfDays || noOfDays,
+          );
+          const days = ALL_DAYS.slice(0, daysCount);
+
+          setNoOfDays(daysCount);
           setWeekStartDate(saved.weekStartDate?.split("T")[0] || weekStartDate);
+          setPanelColor(saved.panelColor || "#ffe0bd");
+          setTextColor(saved.textColor || "#c0392b");
+          setEntries(normalizeEntries(saved.entries || [], days));
         } else {
+          const daysCount = Number(selectedGame?.noOfDays || noOfDays);
+          const days = ALL_DAYS.slice(0, daysCount);
+
+          setNoOfDays(daysCount);
+          setPanelColor("#ffe0bd");
+          setTextColor("#c0392b");
           setEntries(days.map(emptyEntry));
         }
-      })
-      .catch(() => {
-        setEntries(days.map(emptyEntry));
-      })
-      .finally(() => setLoading(false));
-  }, [selectedGameId]);
+      } catch (err) {
+        const selectedGame = games.find((g) => g._id === selectedGameId);
+        const daysCount = Number(selectedGame?.noOfDays || noOfDays);
+        const days = ALL_DAYS.slice(0, daysCount);
 
-  // Rebuild entries when noOfDays changes
+        setNoOfDays(daysCount);
+        setPanelColor("#ffe0bd");
+        setTextColor("#c0392b");
+        setEntries(days.map(emptyEntry));
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGuessingChart();
+  }, [selectedGameId, weekStartDate, games]);
+
   useEffect(() => {
     const days = ALL_DAYS.slice(0, Number(noOfDays));
-    setEntries((prev) => {
-      return days.map((day) => {
+
+    setEntries((prev) =>
+      days.map((day) => {
         const existing = prev.find((e) => e.day === day);
         return existing || emptyEntry(day);
-      });
-    });
+      }),
+    );
   }, [noOfDays]);
 
   const updateCol = (dayIndex, colIndex, field, value) => {
     setEntries((prev) => {
       const updated = [...prev];
+
       updated[dayIndex] = {
         ...updated[dayIndex],
         columns: updated[dayIndex].columns.map((col, ci) =>
-          ci === colIndex ? { ...col, [field]: value } : col
+          ci === colIndex ? { ...col, [field]: value } : col,
         ),
       };
+
       return updated;
     });
   };
 
   const handleSave = async () => {
-    if (!selectedGameId) { toast.error("Please select a game"); return; }
+    if (!selectedGameId) {
+      toast.error("Please select a game");
+      return;
+    }
+
     setSaving(true);
+
     try {
       const res = await api("/AllGames/save", {
         method: "POST",
-        body: JSON.stringify({ gameId: selectedGameId, noOfDays, weekStartDate, entries }),
+        body: JSON.stringify({
+          gameId: selectedGameId,
+          noOfDays,
+          weekStartDate,
+          panelColor,
+          textColor,
+          entries,
+        }),
       });
+
       if (res.success) {
         toast.success("Guessing chart saved successfully!");
       } else {
@@ -126,28 +201,39 @@ export default function AddGuessingChart() {
   const selectedGame = games.find((g) => g._id === selectedGameId);
 
   return (
-    <div style={{ backgroundColor: "#ffcc99", minHeight: "100vh" }}>
+    <div style={{ backgroundColor: panelColor!==undefined ?  "#ffcc99" : panelColor, minHeight: "100vh" }}>
       <Header />
 
-      <div style={{
-        backgroundColor: "#c0392b", color: "#fff",
-        textAlign: "center", padding: "10px", margin: "6px",
-        borderRadius: "6px", fontWeight: "800", fontSize: "18px",
-      }}>
+      <div
+        style={{
+          backgroundColor: "#c0392b",
+          color: "#fff",
+          textAlign: "center",
+          padding: "10px",
+          margin: "6px",
+          borderRadius: "6px",
+          fontWeight: "800",
+          fontSize: "18px",
+        }}
+      >
         ADD GUESSING CHART
       </div>
 
-      {/* Controls */}
-      <div style={{
-        background: "#fff", margin: "8px", padding: "14px",
-        borderRadius: "8px", border: "2px solid #c0392b",
-        display: "flex", flexWrap: "wrap", gap: "12px", alignItems: "flex-end",
-      }}>
-        {/* Game Dropdown */}
+      <div
+        style={{
+          background: "#fff",
+          margin: "8px",
+          padding: "14px",
+          borderRadius: "8px",
+          border: "2px solid #c0392b",
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "12px",
+          alignItems: "flex-end",
+        }}
+      >
         <div style={{ flex: "1 1 200px" }}>
-          <label style={{ fontWeight: "700", display: "block", marginBottom: 4 }}>
-            Select Game
-          </label>
+          <label style={labelStyle}>Select Game</label>
           <select
             className="form-control"
             value={selectedGameId}
@@ -155,16 +241,15 @@ export default function AddGuessingChart() {
           >
             <option value="">-- Select Game --</option>
             {games.map((g) => (
-              <option key={g._id} value={g._id}>{g.name}</option>
+              <option key={g._id} value={g._id}>
+                {g.name}
+              </option>
             ))}
           </select>
         </div>
 
-        {/* No of Days */}
         <div style={{ flex: "1 1 120px" }}>
-          <label style={{ fontWeight: "700", display: "block", marginBottom: 4 }}>
-            No of Days
-          </label>
+          <label style={labelStyle}>No of Days</label>
           <select
             className="form-control"
             value={noOfDays}
@@ -176,11 +261,8 @@ export default function AddGuessingChart() {
           </select>
         </div>
 
-        {/* Week Start */}
         <div style={{ flex: "1 1 160px" }}>
-          <label style={{ fontWeight: "700", display: "block", marginBottom: 4 }}>
-            Week Starting (Monday)
-          </label>
+          <label style={labelStyle}>Week Starting Monday</label>
           <input
             type="date"
             className="form-control"
@@ -189,14 +271,37 @@ export default function AddGuessingChart() {
           />
         </div>
 
-        {/* Save Button */}
+        <div style={{ flex: "1 1 120px" }}>
+          <label style={labelStyle}>Panel Color</label>
+          <input
+            type="color"
+            className="form-control"
+            value={panelColor}
+            onChange={(e) => setPanelColor(e.target.value)}
+          />
+        </div>
+
+        <div style={{ flex: "1 1 120px" }}>
+          <label style={labelStyle}>Text Color</label>
+          <input
+            type="color"
+            className="form-control"
+            value={textColor}
+            onChange={(e) => setTextColor(e.target.value)}
+          />
+        </div>
+
         <button
           onClick={handleSave}
           disabled={saving || !selectedGameId}
           style={{
             backgroundColor: saving ? "#aaa" : "#27ae60",
-            color: "#fff", border: "none", borderRadius: "6px",
-            padding: "10px 28px", fontWeight: "800", fontSize: "15px",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            padding: "10px 28px",
+            fontWeight: "800",
+            fontSize: "15px",
             cursor: saving ? "not-allowed" : "pointer",
           }}
         >
@@ -204,31 +309,42 @@ export default function AddGuessingChart() {
         </button>
       </div>
 
-      {/* Table */}
       {selectedGameId && !loading && (
         <div style={{ margin: "8px", overflowX: "auto" }}>
-          {/* Game Name Header */}
-          <div style={{
-            background: "#f1c40f", color: "#c0392b",
-            textAlign: "center", padding: "8px",
-            fontWeight: "900", fontSize: "20px",
-            fontStyle: "italic", borderRadius: "6px 6px 0 0",
-            border: "2px solid #c0392b",
-          }}>
+          <div
+            style={{
+              background: "#f1c40f",
+              color: "#c0392b",
+              textAlign: "center",
+              padding: "8px",
+              fontWeight: "900",
+              fontSize: "20px",
+              fontStyle: "italic",
+              borderRadius: "6px 6px 0 0",
+              border: "2px solid #c0392b",
+            }}
+          >
             {selectedGame?.name || ""}
           </div>
 
-          <table style={{
-            width: "100%", borderCollapse: "collapse",
-            backgroundColor: "#ffcc99", border: "2px solid #c0392b",
-          }}>
+          <table
+            style={{
+              width: "100%",
+              borderCollapse: "collapse",
+              backgroundColor: panelColor!==undefined ?  panelColor : "#ffcc99" ,
+              border: "2px solid #c0392b",
+            }}
+          >
             <thead>
               <tr style={{ backgroundColor: "#c0392b", color: "#fff" }}>
                 <th style={thStyle}>Day</th>
                 {Array.from({ length: NUM_COLS }).map((_, ci) => (
-                  <th key={ci} colSpan={3} style={thStyle}>Column {ci + 1}</th>
+                  <th key={ci} colSpan={3} style={thStyle}>
+                    Column {ci + 1}
+                  </th>
                 ))}
               </tr>
+
               <tr style={{ backgroundColor: "#e74c3c", color: "#fff" }}>
                 <th style={thStyle}></th>
                 {Array.from({ length: NUM_COLS }).map((_, ci) => (
@@ -240,49 +356,76 @@ export default function AddGuessingChart() {
                 ))}
               </tr>
             </thead>
+
             <tbody>
               {entries.map((entry, di) => (
                 <tr key={entry.day} style={{ borderBottom: "1px solid #c0392b" }}>
-                  {/* Day name */}
-                  <td style={{
-                    ...tdStyle, backgroundColor: "#fff3cd",
-                    fontWeight: "800", fontSize: "15px", minWidth: "60px",
-                  }}>
+                  <td
+                    style={{
+                      ...tdStyle,
+                      backgroundColor: "#fff3cd",
+                      fontWeight: "800",
+                      fontSize: "15px",
+                      minWidth: "60px",
+                    }}
+                  >
                     <div>{HINDI_DAYS[entry.day]}</div>
-                    <div style={{ fontSize: "10px", color: "#888" }}>{entry.day.slice(0, 3)}</div>
+                    <div style={{ fontSize: "10px", color: "#888" }}>
+                      {entry.day.slice(0, 3)}
+                    </div>
                   </td>
 
                   {entry.columns.map((col, ci) => (
                     <React.Fragment key={ci}>
-                      {/* Panel */}
                       <td style={tdStyle}>
                         <input
-                          style={inputStyle}
+                          style={{
+                            ...inputStyle,
+                            backgroundColor: panelColor,
+                            color: textColor,
+                          }}
                           maxLength={3}
                           placeholder="000"
-                          value={col.panel}
-                          onChange={(e) => updateCol(di, ci, "panel", e.target.value)}
+                          value={col.panel || ""}
+                          onChange={(e) =>
+                            updateCol(di, ci, "panel", e.target.value)
+                          }
                         />
                       </td>
-                      {/* Digit */}
+
                       <td style={tdStyle}>
                         <input
-                          style={{ ...inputStyle, width: "36px", fontWeight: "900",
-                            fontSize: "18px", color: "#c0392b", textAlign: "center" }}
+                          style={{
+                            ...inputStyle,
+                            width: "36px",
+                            fontWeight: "900",
+                            fontSize: "18px",
+                            backgroundColor: panelColor,
+                            color: textColor,
+                            textAlign: "center",
+                          }}
                           maxLength={1}
                           placeholder="0"
-                          value={col.digit}
-                          onChange={(e) => updateCol(di, ci, "digit", e.target.value)}
+                          value={col.digit || ""}
+                          onChange={(e) =>
+                            updateCol(di, ci, "digit", e.target.value)
+                          }
                         />
                       </td>
-                      {/* Jodi */}
+
                       <td style={tdStyle}>
                         <input
-                          style={inputStyle}
+                          style={{
+                            ...inputStyle,
+                            backgroundColor: panelColor,
+                            color: textColor,
+                          }}
                           maxLength={2}
                           placeholder="00"
-                          value={col.jodi}
-                          onChange={(e) => updateCol(di, ci, "jodi", e.target.value)}
+                          value={col.jodi || ""}
+                          onChange={(e) =>
+                            updateCol(di, ci, "jodi", e.target.value)
+                          }
                         />
                       </td>
                     </React.Fragment>
@@ -292,15 +435,18 @@ export default function AddGuessingChart() {
             </tbody>
           </table>
 
-          {/* Bottom Save */}
           <div style={{ textAlign: "center", margin: "16px 0" }}>
             <button
               onClick={handleSave}
               disabled={saving}
               style={{
                 backgroundColor: saving ? "#aaa" : "#c0392b",
-                color: "#fff", border: "none", borderRadius: "6px",
-                padding: "12px 40px", fontWeight: "800", fontSize: "16px",
+                color: "#fff",
+                border: "none",
+                borderRadius: "6px",
+                padding: "12px 40px",
+                fontWeight: "800",
+                fontSize: "16px",
                 cursor: saving ? "not-allowed" : "pointer",
                 boxShadow: "0 3px 8px rgba(0,0,0,0.2)",
               }}
@@ -312,7 +458,14 @@ export default function AddGuessingChart() {
       )}
 
       {loading && (
-        <div style={{ textAlign: "center", padding: "30px", color: "#c0392b", fontWeight: "700" }}>
+        <div
+          style={{
+            textAlign: "center",
+            padding: "30px",
+            color: "#c0392b",
+            fontWeight: "700",
+          }}
+        >
           Loading existing data...
         </div>
       )}
@@ -322,19 +475,32 @@ export default function AddGuessingChart() {
   );
 }
 
-// ── Styles ──
+const labelStyle = {
+  fontWeight: "700",
+  display: "block",
+  marginBottom: 4,
+};
+
 const thStyle = {
-  padding: "6px 4px", textAlign: "center",
-  border: "1px solid #fff", fontSize: "12px",
+  padding: "6px 4px",
+  textAlign: "center",
+  border: "1px solid #fff",
+  fontSize: "12px",
 };
 
 const tdStyle = {
-  padding: "4px", textAlign: "center",
-  border: "1px solid #c0392b", verticalAlign: "middle",
+  padding: "4px",
+  textAlign: "center",
+  border: "1px solid #c0392b",
+  verticalAlign: "middle",
 };
 
 const inputStyle = {
-  width: "52px", padding: "4px 2px", textAlign: "center",
-  border: "1px solid #c0392b", borderRadius: "4px",
-  fontSize: "13px", fontWeight: "700", backgroundColor: "#fff",
+  width: "52px",
+  padding: "4px 2px",
+  textAlign: "center",
+  border: "1px solid #c0392b",
+  borderRadius: "4px",
+  fontSize: "13px",
+  fontWeight: "700",
 };
