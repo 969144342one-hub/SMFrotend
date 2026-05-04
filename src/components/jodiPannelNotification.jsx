@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./Comman.css";
 import { api } from "../lib/api";
+import { jwtDecode } from "jwt-decode";// 👉 install: npm install jwt-decode
+
 
 function JodiPannelNotification() {
   const [formData, setFormData] = useState({

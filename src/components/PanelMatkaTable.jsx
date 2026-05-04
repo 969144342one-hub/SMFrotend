@@ -29,7 +29,7 @@ const styles = `
   .go-bottom, .go-up {
     display: inline-block;
     margin: 8px 6px;
-    background: #c0392b;
+    background: #be4335;
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -65,7 +65,7 @@ const styles = `
   /* ── Day header ── */
   .compact-day {
     background: #222;
-    color: #f1c40f;
+    color: #ffffff;
     font-size: 11px;
     font-weight: 700;
     padding: 5px 2px;
@@ -75,8 +75,8 @@ const styles = `
 
   /* ── Week cell ── */
   .week-cell {
-    background: #fff8e1;
-    border: 1px solid #e0c97f;
+    background: #0c0c0c;
+    border: 1px solid #ffffff;
     vertical-align: middle;
     text-align: center;
     padding: 3px 2px;
@@ -86,24 +86,25 @@ const styles = `
   .week-date-text {
     font-size: 9.5px;
     font-weight: 700;
-    color: #333;
+    color: #ffffff;
     line-height: 1.3;
     display: block;
   }
 
   .week-to-text {
     font-size: 8px;
-    color: #888;
+    color: #fcfbfb;
     display: block;
   }
 
   /* ── Data cell ── */
   .cell {
-    border: 1px solid #ccc;
+    border: 1px solid #ffffff;
     padding: 3px 1px;
     text-align: center;
     vertical-align: middle;
-    background: #fff;
+    background: #000000;
+    color: #ffffff
   }
 
   /* Cell inner layout: left digits | jodi | right digits */
@@ -138,7 +139,7 @@ const styles = `
     display: block;
     font-size: 10px;
     font-weight: 700;
-    color: #1a237e;
+    color: #ffffff;
     line-height: 1.35;
   }
 
@@ -146,7 +147,7 @@ const styles = `
   .big-jodi {
     font-size: 13px;
     font-weight: 900;
-    color: #000;
+    color: #ffffff;
     text-align: center;
     line-height: 1;
   }
@@ -156,7 +157,7 @@ const styles = `
   }
 
   .empty-slot {
-    color: #bbb;
+    color: #ffffff;
     font-size: 11px;
   }
 
