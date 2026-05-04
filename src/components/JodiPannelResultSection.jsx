@@ -1327,7 +1327,7 @@ export default function JodiPannelResultSection() {
                         <path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.123 1.532 5.855L.057 23.514a.75.75 0 00.929.929l5.653-1.476A11.952 11.952 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.946 0-3.772-.525-5.34-1.44l-.383-.228-3.955 1.034 1.053-3.845-.25-.4A9.96 9.96 0 012 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z" />
                       </svg>
 
-                      <span className="jpn-btn-label">FREE GAME</span>
+                      <span className="jpn-btn-label">Connect US</span>
                     </button>
                   )}
 
