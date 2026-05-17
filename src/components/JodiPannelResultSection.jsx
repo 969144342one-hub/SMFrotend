@@ -614,10 +614,11 @@ export default function JodiPannelResultSection() {
   if (loading) return <div>Loading games...</div>;
   if (error) return <div>Error: {error}</div>;
   const sortedGames = [...games].sort((a, b) => {
-    const diffA = getNearestGameTime(a);
-    const diffB = getNearestGameTime(b);
+    const sortA = getGameOpenSort(a);
+    const sortB = getGameOpenSort(b);
 
-    return diffA - diffB;
+    if (sortA.group !== sortB.group) return sortA.group - sortB.group;
+    return sortA.value - sortB.value;
   });
 
   function timeToTodayDate(timeStr) {
@@ -629,25 +630,21 @@ export default function JodiPannelResultSection() {
     return new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
   }
 
-  function getNearestGameTime(game) {
+  function getGameOpenSort(game) {
     const now = new Date();
-
     const start = timeToTodayDate(game.startTime);
-    const end = timeToTodayDate(game.endTime);
 
-    const DAY = 24 * 60 * 60 * 1000;
+    if (!start || isNaN(start.getTime())) {
+      return { group: 2, value: Infinity };
+    }
 
-    const normalize = (t) => {
-      if (!t) return Infinity;
-      let diff = t - now;
-      if (diff < 0) diff += DAY; // push past times to next day
-      return diff;
-    };
+    const diff = start - now;
 
-    const startDiff = normalize(start);
-    const endDiff = normalize(end);
+    if (diff <= 0) {
+      return { group: 0, value: Math.abs(diff) };
+    }
 
-    return Math.min(startDiff, endDiff);
+    return { group: 1, value: diff };
   }
 
   const handleSaveFontSize = async (gameId) => {
@@ -879,6 +876,34 @@ export default function JodiPannelResultSection() {
     const sorted = [...arr].sort((a, b) => new Date(b[2]) - new Date(a[2]));
 
     return sorted[0]; // latest
+  }
+
+  function isSameLocalDate(dateString, dateToCompare = new Date()) {
+    if (!dateString) return false;
+
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return false;
+
+    return (
+      date.getFullYear() === dateToCompare.getFullYear() &&
+      date.getMonth() === dateToCompare.getMonth() &&
+      date.getDate() === dateToCompare.getDate()
+    );
+  }
+
+  function hasTodayResult(list) {
+    return Array.isArray(list) && list.some((entry) => isSameLocalDate(entry?.[2]));
+  }
+
+  function isInResultLoadingWindow(timeStr, now = new Date()) {
+    const resultTime = timeToTodayDate(timeStr);
+    if (!resultTime || isNaN(resultTime.getTime())) return false;
+
+    const tenMinutes = 10 * 60 * 1000;
+    const windowStart = new Date(resultTime.getTime() - tenMinutes);
+    const windowEnd = new Date(resultTime.getTime() + tenMinutes);
+
+    return now >= windowStart && now <= windowEnd;
   }
 
   const openWhatsapp = (number) => {
@@ -1150,34 +1175,15 @@ export default function JodiPannelResultSection() {
 
           const getDisplayResultOrLoading = (item) => {
             const now = new Date();
+            const shouldShowOpenLoading =
+              isInResultLoadingWindow(item.startTime, now) &&
+              !hasTodayResult(item.openNo);
+            const shouldShowCloseLoading =
+              isInResultLoadingWindow(item.endTime, now) &&
+              !hasTodayResult(item.closeNo);
 
-            // Parse startTime in "HH:mm" format
-            let startTime = null;
-            if (item.startTime) {
-              const [hours, minutes] = item.startTime.split(":").map(Number);
-              startTime = new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                now.getDate(),
-                hours,
-                minutes,
-                0,
-              );
-            }
-
-            // Show loading if startTime is invalid
-            if (!startTime || isNaN(startTime.getTime())) {
-              return <p style={{ color: "#ff0000" }}>Loading...</p>;
-            }
-
-            const tenMinutesBeforeStart = new Date(
-              startTime.getTime() - 10 * 60 * 1000,
-            );
-
-            // Show loading if current time is before startTime - 10min OR result not available
             if (
-              now >= tenMinutesBeforeStart &&
-              now <= startTime &&
+              (shouldShowOpenLoading || shouldShowCloseLoading) &&
               item?.IsNotification !== "Yes"
             ) {
               return <p style={{ color: "#ff0000" }}>Loading...</p>;

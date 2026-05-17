@@ -16,7 +16,6 @@ import UserPayments from "../components/AgentList";
 import NotificationPage from "../components/NoticationPage";
 import AllPageLink from "../components/allLinkPage";
 import ApiPoller from "../components/ApiCaller";
-import AddGuessingChart from './AddGuessingChart'
 import GuessingChartDisplay from './GuessingChartDisplay'
 import { api } from "../lib/api";
 import { jwtDecode } from "jwt-decode";
@@ -91,17 +90,18 @@ const StaticButtons = () => {
 
 const HomePage = ({ setGameTitle }) => {
   const [responseNotification, setResponseNotification] = useState([]);
+  const [isGameOwner, setIsGameOwner] = useState(false);
   const token = localStorage.getItem("authToken");
   const navigate = useNavigate()
 
-  // let username = null;
+  let username = null;
   let role = null;
 
   if (token) {
     try {
       const decoded = jwtDecode(token);
-      // role = decoded.role;
       role = decoded.role;
+      username = decoded.username;
     } catch (err) {
       console.error("Invalid token", err);
     }
@@ -153,6 +153,24 @@ const HomePage = ({ setGameTitle }) => {
     };
   }, []);
 
+  useEffect(() => {
+    if (!username || role === "Admin") return;
+
+    const fetchOwnedGames = async () => {
+      try {
+        const data = await api("/AllGames/");
+
+        if (data.success && Array.isArray(data.data)) {
+          setIsGameOwner(data.data.some((game) => game.owner === username));
+        }
+      } catch (err) {
+        console.error("Error checking game owner:", err);
+      }
+    };
+
+    fetchOwnedGames();
+  }, [role, username]);
+
   return (
     <>
       {/* 🛑 CONDITIONAL RENDERING FOR ADMIN BUTTONS */}
@@ -166,7 +184,7 @@ const HomePage = ({ setGameTitle }) => {
         {/* Page Sections */}
         <Header />
         <WelcomeBanner />
-        {role === "Admin" ?
+        {role === "Admin" || isGameOwner ?
         <button onClick={() => navigate("/admin/guessing")}>
           Add Guessing Chart
         </button> : ""}

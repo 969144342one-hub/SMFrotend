@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import { api } from "../lib/api";
+import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -25,6 +26,8 @@ const HINDI_DAYS = {
 };
 
 const NUM_COLS = 4;
+const DEFAULT_PANEL_COLOR = "#f2c38b";
+const DEFAULT_TEXT_COLOR = "#000000";
 
 const emptyCol = () => ({ panel: "", jodi: "", digit: "" });
 
@@ -39,6 +42,27 @@ const getMonday = (date) => {
   const diff = day === 0 ? -6 : 1 - day;
   d.setDate(d.getDate() + diff);
   return d.toISOString().split("T")[0];
+};
+
+const getPanelDigit = (panel) => {
+  if (!/^\d{3}$/.test(panel)) return "";
+
+  const total = panel
+    .split("")
+    .reduce((sum, digit) => sum + Number(digit), 0);
+
+  return String(total % 10);
+};
+
+const getJodiWithDigit = (value, digit) => {
+  if (!digit) return value.replace(/\D/g, "").slice(0, 2);
+
+  const numbersOnly = value.replace(/\D/g, "");
+  const manualDigit = numbersOnly.startsWith(digit)
+    ? numbersOnly.slice(1, 2)
+    : numbersOnly.slice(-1);
+
+  return `${digit}${manualDigit || ""}`;
 };
 
 const normalizeEntries = (savedEntries = [], days = []) => {
@@ -61,16 +85,85 @@ const normalizeEntries = (savedEntries = [], days = []) => {
   });
 };
 
+const getIdValue = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (value.$oid) return value.$oid;
+  if (value._id) return getIdValue(value._id);
+  return String(value);
+};
+
+const toDateInputValue = (value) => {
+  if (!value) return "";
+  if (typeof value === "string") return value.split("T")[0];
+
+  const date = new Date(value);
+  return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
+};
+
+const getSavedChartFromResponse = (response) => {
+  if (!response) return null;
+
+  const possibleData = [
+    response.data,
+    response.chart,
+    response.guessingChart,
+    response.result,
+    response.data?.chart,
+    response.data?.guessingChart,
+    response.data?.result,
+  ];
+
+  return possibleData.find((item) => item && !Array.isArray(item)) || null;
+};
+
+const findSavedChartForGame = (charts = [], gameId, weekStartDate) => {
+  const selectedWeek = toDateInputValue(weekStartDate);
+  const gameCharts = charts.filter((chart) => {
+    const chartGameId = getIdValue(chart.gameId);
+    return chartGameId === gameId;
+  });
+
+  if (selectedWeek) {
+    const weekMatch = gameCharts.find(
+      (chart) => toDateInputValue(chart.weekStartDate) === selectedWeek,
+    );
+
+    if (weekMatch) return weekMatch;
+  }
+
+  return gameCharts.sort((a, b) => {
+    const dateA = new Date(a.weekStartDate || a.updatedAt || 0).getTime();
+    const dateB = new Date(b.weekStartDate || b.updatedAt || 0).getTime();
+    return dateB - dateA;
+  })[0];
+};
+
 export default function AddGuessingChart() {
   const [games, setGames] = useState([]);
   const [selectedGameId, setSelectedGameId] = useState("");
   const [noOfDays, setNoOfDays] = useState(7);
   const [weekStartDate, setWeekStartDate] = useState(getMonday(new Date()));
   const [entries, setEntries] = useState([]);
-  const [panelColor, setPanelColor] = useState("#ffe0bd");
-  const [textColor, setTextColor] = useState("#c0392b");
+  const [panelColor, setPanelColor] = useState(DEFAULT_PANEL_COLOR);
+  const [textColor, setTextColor] = useState(DEFAULT_TEXT_COLOR);
+  const [isActive, setIsActive] = useState(true);
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem("authToken");
+
+  let username = null;
+  let role = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      role = decoded.role;
+      username = decoded.username;
+    } catch (err) {
+      console.error("Invalid token", err);
+    }
+  }
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -78,7 +171,13 @@ export default function AddGuessingChart() {
         const data = await api("/AllGames/");
 
         if (data.success) {
-          setGames(data.data.filter((g) => g.status === "Active"));
+          const activeGames = data.data.filter((g) => g.status === "Active");
+          const allowedGames =
+            role === "Admin"
+              ? activeGames
+              : activeGames.filter((g) => g.owner === username);
+
+          setGames(allowedGames);
         }
       } catch (err) {
         toast.error("Failed to load games");
@@ -96,31 +195,61 @@ export default function AddGuessingChart() {
 
       try {
         const selectedGame = games.find((g) => g._id === selectedGameId);
-
-        const data = await api(
-          `/AllGames/guessing/${selectedGameId}?weekStartDate=${weekStartDate}`,
-        );
-
-        if (data.success && data.data) {
-          const saved = data.data;
+        const loadSavedChart = (saved) => {
           const daysCount = Number(
             saved.noOfDays || selectedGame?.noOfDays || noOfDays,
           );
           const days = ALL_DAYS.slice(0, daysCount);
+          const savedWeekStartDate = toDateInputValue(saved.weekStartDate);
 
           setNoOfDays(daysCount);
-          setWeekStartDate(saved.weekStartDate?.split("T")[0] || weekStartDate);
-          setPanelColor(saved.panelColor || "#ffe0bd");
-          setTextColor(saved.textColor || "#c0392b");
+          if (savedWeekStartDate) {
+            setWeekStartDate(savedWeekStartDate);
+          }
+          setPanelColor(saved.panelColor || DEFAULT_PANEL_COLOR);
+          setTextColor(saved.textColor || DEFAULT_TEXT_COLOR);
+          setIsActive(saved.isActive !== false);
           setEntries(normalizeEntries(saved.entries || [], days));
-        } else {
+        };
+
+        const loadBlankChart = () => {
           const daysCount = Number(selectedGame?.noOfDays || noOfDays);
           const days = ALL_DAYS.slice(0, daysCount);
 
           setNoOfDays(daysCount);
-          setPanelColor("#ffe0bd");
-          setTextColor("#c0392b");
+          setPanelColor(DEFAULT_PANEL_COLOR);
+          setTextColor(DEFAULT_TEXT_COLOR);
+          setIsActive(true);
           setEntries(days.map(emptyEntry));
+        };
+
+        const data = await api(
+          `/AllGames/guessing/${selectedGameId}?weekStartDate=${weekStartDate}`,
+        );
+        const savedChart =
+          getSavedChartFromResponse(data) ||
+          (Array.isArray(data.data)
+            ? findSavedChartForGame(data.data, selectedGameId, weekStartDate)
+            : null);
+
+        if (data.success && savedChart) {
+          loadSavedChart(savedChart);
+        } else {
+          const allCharts = await api("/AllGames/all");
+          const fallbackSavedChart =
+            allCharts.success && Array.isArray(allCharts.data)
+              ? findSavedChartForGame(
+                  allCharts.data,
+                  selectedGameId,
+                  weekStartDate,
+                )
+              : null;
+
+          if (fallbackSavedChart) {
+            loadSavedChart(fallbackSavedChart);
+          } else {
+            loadBlankChart();
+          }
         }
       } catch (err) {
         const selectedGame = games.find((g) => g._id === selectedGameId);
@@ -128,8 +257,9 @@ export default function AddGuessingChart() {
         const days = ALL_DAYS.slice(0, daysCount);
 
         setNoOfDays(daysCount);
-        setPanelColor("#ffe0bd");
-        setTextColor("#c0392b");
+        setPanelColor(DEFAULT_PANEL_COLOR);
+        setTextColor(DEFAULT_TEXT_COLOR);
+        setIsActive(true);
         setEntries(days.map(emptyEntry));
       } finally {
         setLoading(false);
@@ -156,13 +286,44 @@ export default function AddGuessingChart() {
 
       updated[dayIndex] = {
         ...updated[dayIndex],
-        columns: updated[dayIndex].columns.map((col, ci) =>
-          ci === colIndex ? { ...col, [field]: value } : col,
-        ),
+        columns: updated[dayIndex].columns.map((col, ci) => {
+          if (ci !== colIndex) return col;
+
+          if (field === "panel") {
+            const panel = value.replace(/\D/g, "").slice(0, 3);
+            const digit = getPanelDigit(panel);
+
+            return {
+              ...col,
+              panel,
+              digit,
+              jodi: digit ? getJodiWithDigit(col.jodi || digit, digit) : "",
+            };
+          }
+
+          if (field === "jodi") {
+            return {
+              ...col,
+              jodi: getJodiWithDigit(value, col.digit),
+            };
+          }
+
+          return { ...col, [field]: value };
+        }),
       };
 
       return updated;
     });
+  };
+
+  const handleClearAll = () => {
+    const days = ALL_DAYS.slice(0, Number(noOfDays));
+    setEntries(days.map(emptyEntry));
+  };
+
+  const handleResetColors = () => {
+    setPanelColor(DEFAULT_PANEL_COLOR);
+    setTextColor(DEFAULT_TEXT_COLOR);
   };
 
   const handleSave = async () => {
@@ -182,6 +343,7 @@ export default function AddGuessingChart() {
           weekStartDate,
           panelColor,
           textColor,
+          isActive,
           entries,
         }),
       });
@@ -201,8 +363,8 @@ export default function AddGuessingChart() {
   const selectedGame = games.find((g) => g._id === selectedGameId);
 
   return (
-    <div style={{ backgroundColor: panelColor!==undefined ?  "#ffcc99" : panelColor, minHeight: "100vh" }}>
-      <Header />
+    <div style={{ backgroundColor: DEFAULT_PANEL_COLOR, minHeight: "100vh" }}>
+      {/* <Header /> */}
 
       <div
         style={{
@@ -290,6 +452,59 @@ export default function AddGuessingChart() {
             onChange={(e) => setTextColor(e.target.value)}
           />
         </div>
+
+        <button
+          type="button"
+          onClick={handleResetColors}
+          style={{
+            backgroundColor: "#111",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            padding: "10px 18px",
+            fontWeight: "800",
+            fontSize: "15px",
+          }}
+        >
+          RESET COLORS
+        </button>
+
+        <div style={{ flex: "1 1 120px" }}>
+          <label style={labelStyle}>Status</label>
+          <button
+            type="button"
+            onClick={() => setIsActive((prev) => !prev)}
+            style={{
+              backgroundColor: isActive ? "#27ae60" : "#777",
+              color: "#fff",
+              border: "none",
+              borderRadius: "6px",
+              padding: "10px 18px",
+              fontWeight: "800",
+              width: "100%",
+            }}
+          >
+            {isActive ? "Active" : "Inactive"}
+          </button>
+        </div>
+
+        <button
+          type="button"
+          onClick={handleClearAll}
+          disabled={!selectedGameId || loading}
+          style={{
+            backgroundColor: !selectedGameId || loading ? "#aaa" : "#34495e",
+            color: "#fff",
+            border: "none",
+            borderRadius: "6px",
+            padding: "10px 22px",
+            fontWeight: "800",
+            fontSize: "15px",
+            cursor: !selectedGameId || loading ? "not-allowed" : "pointer",
+          }}
+        >
+          CLEAR ALL
+        </button>
 
         <button
           onClick={handleSave}
@@ -407,9 +622,7 @@ export default function AddGuessingChart() {
                           maxLength={1}
                           placeholder="0"
                           value={col.digit || ""}
-                          onChange={(e) =>
-                            updateCol(di, ci, "digit", e.target.value)
-                          }
+                          readOnly
                         />
                       </td>
 
@@ -436,6 +649,26 @@ export default function AddGuessingChart() {
           </table>
 
           <div style={{ textAlign: "center", margin: "16px 0" }}>
+            <button
+              type="button"
+              onClick={handleClearAll}
+              disabled={saving}
+              style={{
+                backgroundColor: saving ? "#aaa" : "#34495e",
+                color: "#fff",
+                border: "none",
+                borderRadius: "6px",
+                padding: "12px 32px",
+                fontWeight: "800",
+                fontSize: "16px",
+                cursor: saving ? "not-allowed" : "pointer",
+                boxShadow: "0 3px 8px rgba(0,0,0,0.2)",
+                marginRight: "8px",
+              }}
+            >
+              CLEAR ALL
+            </button>
+
             <button
               onClick={handleSave}
               disabled={saving}

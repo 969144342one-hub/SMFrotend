@@ -94,11 +94,24 @@ const AllPageLink = (props) => {
                 // Styling for each row (light orange/peach, blue italic text)
                 className="
                   w-full py-3 px-6 text-center text-lg font-semibold italic 
-                  text-blue-900 border-b-2 border-pink-300 
+                  border-b-2 border-pink-300 
                   cursor-pointer transition duration-150 ease-in-out
                   hover:bg-amber-300 active:bg-amber-400
                 "
-                style={{ backgroundColor: '#ffcc99', fontSize:"20px", fontWeight:"bold",  border: "2px solid #092581" , color:"#092581"}}
+                style={{
+                  backgroundColor: "#f8e1df",
+                  fontSize: "28px",
+                  fontWeight: "900",
+                  border: "2px solid #000000",
+                  borderLeft: "6px solid #ff0000",
+                  borderRight: "6px solid #ff0000",
+                  color: "#000000",
+                  textDecoration: "underline",
+                  textDecorationColor: "#d5cf48",
+                  textUnderlineOffset: "3px",
+                  textShadow: "1px 1px 0 #d5cf48",
+                  lineHeight: 1.15,
+                }}
                 title={`View ${game.name} Chart`}
               > 
                 {game.name}  

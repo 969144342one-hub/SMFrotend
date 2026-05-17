@@ -66,6 +66,56 @@ const LiveResultSection = () => {
     return allowedDays.includes(today);
   }
 
+  function isSameLocalDate(dateString, dateToCompare = new Date()) {
+    if (!dateString) return false;
+
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return false;
+
+    return (
+      date.getFullYear() === dateToCompare.getFullYear() &&
+      date.getMonth() === dateToCompare.getMonth() &&
+      date.getDate() === dateToCompare.getDate()
+    );
+  }
+
+  function hasTodayOpenAndClose(game) {
+    const lastOpen = game.openNo?.length ? game.openNo[0] : null;
+    const lastClose = game.closeNo?.length ? game.closeNo[0] : null;
+
+    return isSameLocalDate(lastOpen?.[2]) && isSameLocalDate(lastClose?.[2]);
+  }
+
+  function hasTodayResult(list) {
+    return Array.isArray(list) && list.some((entry) => isSameLocalDate(entry?.[2]));
+  }
+
+  function timeToTodayDate(timeStr) {
+    if (!timeStr) return null;
+
+    const now = new Date();
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    return new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate(),
+      hours,
+      minutes,
+      0,
+    );
+  }
+
+  function isInResultLoadingWindow(timeStr, now = new Date()) {
+    const resultTime = timeToTodayDate(timeStr);
+    if (!resultTime || isNaN(resultTime.getTime())) return false;
+
+    const tenMinutes = 10 * 60 * 1000;
+    const windowStart = new Date(resultTime.getTime() - tenMinutes);
+    const windowEnd = new Date(resultTime.getTime() + tenMinutes);
+
+    return now >= windowStart && now <= windowEnd;
+  }
+
   const handleEditClick = (game) => {
     const todayDate = new Date();
     const dayName = new Date().toLocaleDateString("en-US", {
@@ -202,27 +252,25 @@ const LiveResultSection = () => {
             const closeDate = new Date(game.closeNo?.[0]?.[2]);
             const lastUpdate = openDate > closeDate ? openDate : closeDate;
 
-            // HANDLE LOADING BEFORE START TIME
-            let startTime = null;
-            if (game.startTime) {
-              const [hours, minutes] = game.startTime.split(":").map(Number);
-              startTime = new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                now.getDate(),
-                hours,
-                minutes,
-                0,
-              );
-            }
+            const shouldShowOpenLoading =
+              isInResultLoadingWindow(game.startTime, now) &&
+              !hasTodayResult(game.openNo);
+            const shouldShowCloseLoading =
+              isInResultLoadingWindow(game.endTime, now) &&
+              !hasTodayResult(game.closeNo);
 
-            if (startTime && now < startTime) {
+            if (shouldShowOpenLoading || shouldShowCloseLoading) {
               return {
+                id: game._id,
                 title: game.name,
+                owner: game.owner,
+                status: game.status,
+                validDate: game.valid_date,
                 numbers: "Loading...",
                 openTime: openTimeFromGame,
                 closeTime: closeTimeFromGame,
                 updatedAt: lastUpdate,
+                hasTodayOpenAndClose: hasTodayOpenAndClose(game),
               };
             }
 
@@ -279,6 +327,7 @@ const LiveResultSection = () => {
               openTime: openTimeFromGame,
               closeTime: closeTimeFromGame,
               updatedAt: lastUpdate,
+              hasTodayOpenAndClose: hasTodayOpenAndClose(game),
             };
           });
 
@@ -354,9 +403,10 @@ const LiveResultSection = () => {
                   )
                 }
                 disabled={
-                  item.validDate
+                  item.hasTodayOpenAndClose ||
+                  (item.validDate
                     ? new Date(item.validDate).getTime() < Date.now()
-                    : false
+                    : false)
                 }
               >
                 EDIT

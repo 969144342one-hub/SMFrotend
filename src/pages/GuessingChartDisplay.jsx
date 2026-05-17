@@ -33,7 +33,7 @@ export default function GuessingChartDisplay() {
         const data = await api("/AllGames/all");
 
         if (data.success) {
-          setCharts(data.data);
+          setCharts(data.data.filter((chart) => chart.isActive !== false));
         } else {
           setError("Failed to load charts");
         }
@@ -50,7 +50,7 @@ export default function GuessingChartDisplay() {
   if (loading) {
     return (
       <div style={{ backgroundColor: "#ffcc99", minHeight: "100vh" }}>
-        <Header />
+        {/* <Header /> */}
         <div
           style={{
             textAlign: "center",
@@ -85,7 +85,7 @@ export default function GuessingChartDisplay() {
         padding: "4px",
       }}
     >
-      <Header />
+      {/* <Header /> */}
 
       <div
         style={{
@@ -125,11 +125,8 @@ export default function GuessingChartDisplay() {
 
 function GameChartSection({ chart }) {
   const days = ALL_DAYS.slice(0, chart.noOfDays || 7);
-  const panelColor = chart.panelColor && chart.panelColor.trim() !== "" ? chart.panelColor : "#ffe0bd";
-  const textColor = chart.textColor && chart.textColor.trim() !== "" ? chart.textColor : "#c0392b";
-  console.log(chart.panelColor);
-  console.log(panelColor);
-  
+  const panelColor = chart.panelColor && chart.panelColor.trim() !== "" ? chart.panelColor : "#f2c38b";
+  const textColor = chart.textColor && chart.textColor.trim() !== "" ? chart.textColor : "#000000";
   
   return (
     <div
