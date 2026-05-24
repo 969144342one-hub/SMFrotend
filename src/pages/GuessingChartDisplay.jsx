@@ -173,7 +173,7 @@ function GameChartSection({ chart }) {
                       padding: "6px 8px",
                       fontWeight: "900",
                       fontSize: "15px",
-                      color: "#000",
+                      color: "rgb(0, 255, 0)",
                       backgroundColor: panelColor,
                       border: "1px solid #c0392b",
                       textAlign: "center",

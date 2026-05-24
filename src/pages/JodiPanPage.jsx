@@ -425,10 +425,15 @@ const JodiPanPage = () => {
     if (entry.close) groupedByDay[day].push(entry.close);
   });
 
-  const todayResult =
-    singleGameData.openNo?.length > 0 && singleGameData.closeNo?.length > 0
-      ? `${singleGameData.openNo[0][0]}-${singleGameData.openNo[0][1]}${singleGameData.closeNo[0][1]}-${singleGameData.closeNo[0][0]}`
-      : "N/A";
+  const latestCompleteResult = sortedDates
+    .slice()
+    .reverse()
+    .map((dateKey) => dateMap[dateKey])
+    .find((entry) => entry?.open && entry?.close);
+
+  const todayResult = latestCompleteResult
+    ? `${latestCompleteResult.open[0]}-${latestCompleteResult.open[1]}${latestCompleteResult.close[1]}-${latestCompleteResult.close[0]}`
+    : "N/A";
 
   return (
     <div

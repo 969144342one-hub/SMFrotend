@@ -579,13 +579,14 @@ export default function AddGuessingChart() {
                     style={{
                       ...tdStyle,
                       backgroundColor: "#fff3cd",
+                      color: "rgb(0, 255, 0)",
                       fontWeight: "800",
                       fontSize: "15px",
                       minWidth: "60px",
                     }}
                   >
                     <div>{HINDI_DAYS[entry.day]}</div>
-                    <div style={{ fontSize: "10px", color: "#888" }}>
+                    <div style={{ fontSize: "10px", color: "rgb(0, 255, 0)" }}>
                       {entry.day.slice(0, 3)}
                     </div>
                   </td>

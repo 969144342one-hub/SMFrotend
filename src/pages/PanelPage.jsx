@@ -423,9 +423,15 @@ const PanelPage = () => {
 
   const description = `Dpboss ${singleGameData.name} jodi chart, ${singleGameData.name} jodi chart, old ${singleGameData.name} jodi chart, dpboss ${singleGameData.name} chart, ${singleGameData.name} jodi record, ${singleGameData.name}jodi record, ${singleGameData.name} jodi chart 2015, ${singleGameData.name} jodi chart 2012, ${singleGameData.name} jodi chart 2012 to 2023, ${singleGameData.name} final ank, ${singleGameData.name} jodi chart.co, ${singleGameData.name} jodi chart matka, matka jodi chart ${singleGameData.name}, matka ${singleGameData.name} chart, satta ${singleGameData.name} chart jodi, ${singleGameData.name} state chart, ${singleGameData.name} chart result`;
 
-  const todayOpen = singleGameData.openNo?.[0]?.[0] ?? "";
-  const todayClose = singleGameData.closeNo?.[0]?.[0] ?? "";
-  const todayResult = `${todayOpen}-${singleGameData.openNo?.[0]?.[1] ?? ""}${singleGameData.closeNo?.[0]?.[1] ?? ""}-${todayClose}`;
+  const latestCompleteResult = sortedDateKeys
+    .slice()
+    .reverse()
+    .map((dateKey) => groupedByDate[dateKey])
+    .find((entry) => entry?.open && entry?.close);
+
+  const todayResult = latestCompleteResult
+    ? `${latestCompleteResult.open[0]}-${latestCompleteResult.open[1]}${latestCompleteResult.close[1]}-${latestCompleteResult.close[0]}`
+    : "N/A";
 
   return (
     <div className="bg-danger border m-1 border-danger text-center">
