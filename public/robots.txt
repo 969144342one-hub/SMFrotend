@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sattamatkaaajtak.com/sitemap.xml
+Sitemap: https://www.sattamatkaaajtak.com/sitemap.xml
