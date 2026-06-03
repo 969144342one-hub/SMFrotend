@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="https://www.sitemaps.org/schemas/sitemap/0.9">
+
+<url>
+<loc>https://www.sattamatkaaajtak.com/</loc>
+<lastmod>2025-10-14</lastmod>
+<priority>1.0</priority>
+</url>
+
+<url>
+<loc>https://www.sattamatkaaajtak.com/about-us</loc>
+<priority>0.8</priority>
+</url>
+
+<url>
+<loc>https://www.sattamatkaaajtak.com/contact-us</loc>
+<priority>0.8</priority>
+</url>
+
+<url>
+<loc>https://www.sattamatkaaajtak.com/privacy-policy</loc>
+<priority>0.8</priority>
+</url>
+
+</urlset>
