@@ -86,6 +86,8 @@ export default function JodiPannelResultSection() {
     openOrClose: "",
     day: "",
     date: "",
+    todayOpenResult: "",
+    todayCloseResult: "",
   });
   const [showEditModal, setShowEditModal] = useState(false);
   const [showLiveModal, setShowLiveModal] = useState(false);
@@ -670,6 +672,19 @@ export default function JodiPannelResultSection() {
     const dayName = new Date().toLocaleDateString("en-US", {
       weekday: "long",
     });
+    const getTodayResultInput = (list = []) => {
+      const entry = list.find((item) => {
+        if (!Array.isArray(item) || !item[2]) return false;
+        const resultDate = new Date(item[2]);
+        return (
+          resultDate.getFullYear() === today_date.getFullYear() &&
+          resultDate.getMonth() === today_date.getMonth() &&
+          resultDate.getDate() === today_date.getDate()
+        );
+      });
+
+      return entry ? `${entry[0] || ""}-${entry[1] || ""}` : "";
+    };
 
     setEditGame({
       id: game._id,
@@ -677,6 +692,8 @@ export default function JodiPannelResultSection() {
       openOrClose: "",
       day: dayName,
       date: today_date,
+      todayOpenResult: getTodayResultInput(game.openNo),
+      todayCloseResult: getTodayResultInput(game.closeNo),
     });
     setShowEditModal(true);
     setNameForPop(game.name);
@@ -2267,9 +2284,19 @@ export default function JodiPannelResultSection() {
                 <select
                   id="openOrClose"
                   value={editGame.openOrClose}
-                  onChange={(e) =>
-                    setEditGame({ ...editGame, openOrClose: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const openOrClose = e.target.value;
+                    setEditGame({
+                      ...editGame,
+                      openOrClose,
+                      resultNo:
+                        openOrClose === "Open"
+                          ? editGame.todayOpenResult
+                          : openOrClose === "Close"
+                            ? editGame.todayCloseResult
+                            : "",
+                    });
+                  }}
                   required
                 >
                   <option value="">Select Action</option>

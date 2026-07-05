@@ -18,6 +18,8 @@ const LiveResultSection = () => {
     openOrClose: "",
     day: "",
     date: "",
+    todayOpenResult: "",
+    todayCloseResult: "",
   });
 
   const [showEditModal, setShowEditModal] = useState(false);
@@ -116,11 +118,37 @@ const LiveResultSection = () => {
     return now >= windowStart && now <= windowEnd;
   }
 
+  function getLiveSort(game) {
+    const now = new Date();
+    const openTime = timeToTodayDate(game.startTime || game.openTime);
+    const closeTime = timeToTodayDate(game.endTime || game.closeTime);
+
+    let targetTime = openTime;
+    if (hasTodayResult(game.openNo) && !hasTodayResult(game.closeNo)) {
+      targetTime = closeTime;
+    }
+
+    if (!targetTime || isNaN(targetTime.getTime())) {
+      return { group: 2, value: Infinity };
+    }
+
+    const diff = targetTime - now;
+    if (diff >= 0) {
+      return { group: 0, value: diff };
+    }
+
+    return { group: 1, value: Math.abs(diff) };
+  }
+
   const handleEditClick = (game) => {
     const todayDate = new Date();
     const dayName = new Date().toLocaleDateString("en-US", {
       weekday: "long",
     });
+    const getTodayResultInput = (list = []) => {
+      const entry = list.find((item) => isSameLocalDate(item?.[2], todayDate));
+      return entry ? `${entry[0] || ""}-${entry[1] || ""}` : "";
+    };
 
     setEditGame({
       id: game.id,
@@ -128,6 +156,8 @@ const LiveResultSection = () => {
       openOrClose: "",
       day: dayName,
       date: todayDate,
+      todayOpenResult: getTodayResultInput(game.openNo),
+      todayCloseResult: getTodayResultInput(game.closeNo),
     });
 
     setNameForPop(game.title);
@@ -271,6 +301,8 @@ const LiveResultSection = () => {
                 closeTime: closeTimeFromGame,
                 updatedAt: lastUpdate,
                 hasTodayOpenAndClose: hasTodayOpenAndClose(game),
+                openNo: game.openNo || [],
+                closeNo: game.closeNo || [],
               };
             }
 
@@ -328,10 +360,20 @@ const LiveResultSection = () => {
               closeTime: closeTimeFromGame,
               updatedAt: lastUpdate,
               hasTodayOpenAndClose: hasTodayOpenAndClose(game),
+              openNo: game.openNo || [],
+              closeNo: game.closeNo || [],
             };
           });
 
-          setResults(formatted);
+          setResults(
+            formatted.sort((a, b) => {
+              const sortA = getLiveSort(a);
+              const sortB = getLiveSort(b);
+
+              if (sortA.group !== sortB.group) return sortA.group - sortB.group;
+              return sortA.value - sortB.value;
+            }),
+          );
         } else {
           setResults([]);
         }
@@ -403,10 +445,9 @@ const LiveResultSection = () => {
                   )
                 }
                 disabled={
-                  item.hasTodayOpenAndClose ||
-                  (item.validDate
+                  item.validDate
                     ? new Date(item.validDate).getTime() < Date.now()
-                    : false)
+                    : false
                 }
               >
                 EDIT
@@ -428,9 +469,19 @@ const LiveResultSection = () => {
                 <select
                   id="openOrClose"
                   value={editGame.openOrClose}
-                  onChange={(e) =>
-                    setEditGame({ ...editGame, openOrClose: e.target.value })
-                  }
+                  onChange={(e) => {
+                    const openOrClose = e.target.value;
+                    setEditGame({
+                      ...editGame,
+                      openOrClose,
+                      resultNo:
+                        openOrClose === "Open"
+                          ? editGame.todayOpenResult
+                          : openOrClose === "Close"
+                            ? editGame.todayCloseResult
+                            : "",
+                    });
+                  }}
                   required
                 >
                   <option value="">Select Action</option>
