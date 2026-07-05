@@ -185,25 +185,39 @@ const PanelPage = () => {
     return { ok: true, mainDigits, providedCheck };
   };
 
+  const formatPanelResult = (panel, digit) =>
+    panel && digit ? `${panel}-${digit}` : "";
+
+  const parsePanelResult = (value = "") => {
+    const parts = value.split("-").map((part) => part.trim());
+    return {
+      panel: parts[0] || "",
+      digit: parts[1] || "",
+    };
+  };
+
   const handleSaveCellResult = async () => {
     try {
+      const openResult = parsePanelResult(editModal.openResult);
+      const closeResult = parsePanelResult(editModal.closeResult);
+
       const openPayload = [
-        editModal.openPanel,
-        editModal.openDigit,
+        openResult.panel,
+        openResult.digit,
         editModal.dateISOString,
         "Open",
         editModal.dayName,
       ];
 
       const closePayload = [
-        editModal.closePanel,
-        editModal.closeDigit,
+        closeResult.panel,
+        closeResult.digit,
         editModal.dateISOString,
         "Close",
         editModal.dayName,
       ];
 
-      if (editModal.openPanel && editModal.openDigit) {
+      if (openResult.panel && openResult.digit) {
         const openRes = await api(`/AllGames/updateGame/${id}`, {
           method: "PUT",
           body: JSON.stringify({ resultNo: openPayload }),
@@ -214,7 +228,7 @@ const PanelPage = () => {
         }
       }
 
-      if (editModal.closePanel && editModal.closeDigit) {
+      if (closeResult.panel && closeResult.digit) {
         const closeRes = await api(`/AllGames/updateGame/${id}`, {
           method: "PUT",
           body: JSON.stringify({ resultNo: closePayload }),
@@ -423,15 +437,24 @@ const PanelPage = () => {
 
   const description = `Dpboss ${singleGameData.name} jodi chart, ${singleGameData.name} jodi chart, old ${singleGameData.name} jodi chart, dpboss ${singleGameData.name} chart, ${singleGameData.name} jodi record, ${singleGameData.name}jodi record, ${singleGameData.name} jodi chart 2015, ${singleGameData.name} jodi chart 2012, ${singleGameData.name} jodi chart 2012 to 2023, ${singleGameData.name} final ank, ${singleGameData.name} jodi chart.co, ${singleGameData.name} jodi chart matka, matka jodi chart ${singleGameData.name}, matka ${singleGameData.name} chart, satta ${singleGameData.name} chart jodi, ${singleGameData.name} state chart, ${singleGameData.name} chart result`;
 
-  const latestCompleteResult = sortedDateKeys
-    .slice()
-    .reverse()
-    .map((dateKey) => groupedByDate[dateKey])
-    .find((entry) => entry?.open && entry?.close);
+  const toLocalDateKey = (date = new Date()) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  };
 
-  const todayResult = latestCompleteResult
-    ? `${latestCompleteResult.open[0]}-${latestCompleteResult.open[1]}${latestCompleteResult.close[1]}-${latestCompleteResult.close[0]}`
-    : "N/A";
+  const todayDateKey = toLocalDateKey();
+  const todayCompleteResult = groupedByDate[todayDateKey];
+
+  const todayResult =
+    todayCompleteResult?.open && todayCompleteResult?.close
+      ? `${todayCompleteResult.open[0]}-${todayCompleteResult.open[1]}${todayCompleteResult.close[1]}-${todayCompleteResult.close[0]}`
+      : todayCompleteResult?.open
+        ? `${todayCompleteResult.open[0]}-${todayCompleteResult.open[1]}`
+        : todayCompleteResult?.close
+          ? `${todayCompleteResult.close[0]}-${todayCompleteResult.close[1]}`
+          : "N/A";
 
   return (
     <div className="bg-danger border m-1 border-danger text-center">
@@ -593,7 +616,13 @@ const PanelPage = () => {
         baseDateFromData={baseDateFromData}
         noOfDays={singleGameData.noOfDays}
         canEditResults={canEditResults}
-        onEditResult={(cell) => setEditModal(cell)}
+        onEditResult={(cell) =>
+          setEditModal({
+            ...cell,
+            openResult: formatPanelResult(cell.openPanel, cell.openDigit),
+            closeResult: formatPanelResult(cell.closePanel, cell.closeDigit),
+          })
+        }
       />
 
       {/* Load More Button */}
@@ -637,47 +666,31 @@ const PanelPage = () => {
               {editModal.dateKey} ({editModal.dayName})
             </p>
 
-            <label>Open Panel</label>
-            <input
-              type="text"
-              className="form-control"
-              value={editModal.openPanel}
-              onChange={(e) =>
-                setEditModal({ ...editModal, openPanel: e.target.value })
-              }
-            />
+            <div>
+              <label>Open Result</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="e.g. 123-6"
+                value={editModal.openResult || ""}
+                onChange={(e) =>
+                  setEditModal({ ...editModal, openResult: e.target.value })
+                }
+              />
+            </div>
 
-            <label>Open Digit</label>
-            <input
-              type="text"
-              className="form-control"
-              maxLength={1}
-              value={editModal.openDigit}
-              onChange={(e) =>
-                setEditModal({ ...editModal, openDigit: e.target.value })
-              }
-            />
-
-            <label>Close Panel</label>
-            <input
-              type="text"
-              className="form-control"
-              value={editModal.closePanel}
-              onChange={(e) =>
-                setEditModal({ ...editModal, closePanel: e.target.value })
-              }
-            />
-
-            <label>Close Digit</label>
-            <input
-              type="text"
-              className="form-control"
-              maxLength={1}
-              value={editModal.closeDigit}
-              onChange={(e) =>
-                setEditModal({ ...editModal, closeDigit: e.target.value })
-              }
-            />
+            <div>
+              <label>Close Result</label>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="e.g. 890-7"
+                value={editModal.closeResult || ""}
+                onChange={(e) =>
+                  setEditModal({ ...editModal, closeResult: e.target.value })
+                }
+              />
+            </div>
 
             <div className="mt-3">
               <button
