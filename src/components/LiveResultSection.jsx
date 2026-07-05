@@ -82,10 +82,7 @@ const LiveResultSection = () => {
   }
 
   function hasTodayOpenAndClose(game) {
-    const lastOpen = game.openNo?.length ? game.openNo[0] : null;
-    const lastClose = game.closeNo?.length ? game.closeNo[0] : null;
-
-    return isSameLocalDate(lastOpen?.[2]) && isSameLocalDate(lastClose?.[2]);
+    return hasTodayResult(game.openNo) && hasTodayResult(game.closeNo);
   }
 
   function hasTodayResult(list) {
@@ -445,9 +442,10 @@ const LiveResultSection = () => {
                   )
                 }
                 disabled={
-                  item.validDate
+                  item.hasTodayOpenAndClose ||
+                  (item.validDate
                     ? new Date(item.validDate).getTime() < Date.now()
-                    : false
+                    : false)
                 }
               >
                 EDIT
