@@ -446,14 +446,20 @@ const PanelPage = () => {
 
   const todayDateKey = toLocalDateKey();
   const todayCompleteResult = groupedByDate[todayDateKey];
+  const latestCompleteResult = sortedDateKeys
+    .slice()
+    .reverse()
+    .map((dateKey) => groupedByDate[dateKey])
+    .find((entry) => entry?.open && entry?.close);
+  const displayResult = todayCompleteResult || latestCompleteResult;
 
   const todayResult =
-    todayCompleteResult?.open && todayCompleteResult?.close
-      ? `${todayCompleteResult.open[0]}-${todayCompleteResult.open[1]}${todayCompleteResult.close[1]}-${todayCompleteResult.close[0]}`
-      : todayCompleteResult?.open
-        ? `${todayCompleteResult.open[0]}-${todayCompleteResult.open[1]}`
-        : todayCompleteResult?.close
-          ? `${todayCompleteResult.close[0]}-${todayCompleteResult.close[1]}`
+    displayResult?.open && displayResult?.close
+      ? `${displayResult.open[0]}-${displayResult.open[1]}${displayResult.close[1]}-${displayResult.close[0]}`
+      : displayResult?.open
+        ? `${displayResult.open[0]}-${displayResult.open[1]}`
+        : displayResult?.close
+          ? `${displayResult.close[0]}-${displayResult.close[1]}`
           : "N/A";
 
   return (

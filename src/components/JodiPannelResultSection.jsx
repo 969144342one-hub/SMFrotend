@@ -967,6 +967,22 @@ export default function JodiPannelResultSection() {
     return `${openMain}-${openDigit}${closeDigit}-${closeMain}`;
   };
 
+  const hasCompleteLatestNonTodayResult = (item) => {
+    const lastOpen = getLatestEntry(item.openNo);
+    const lastClose = getLatestEntry(item.closeNo);
+
+    if (!lastOpen?.[2] || !lastClose?.[2]) return false;
+
+    const openDateKey = String(lastOpen[2]).split("T")[0];
+    const closeDateKey = String(lastClose[2]).split("T")[0];
+
+    return (
+      openDateKey === closeDateKey &&
+      !isSameLocalDate(lastOpen[2]) &&
+      !isSameLocalDate(lastClose[2])
+    );
+  };
+
   // const canEditGame = (game, role, username) => {
   //   if (role === "Admin") return true;
   //   return game.owner === username;
@@ -1201,7 +1217,8 @@ export default function JodiPannelResultSection() {
 
             if (
               (shouldShowOpenLoading || shouldShowCloseLoading) &&
-              item?.IsNotification !== "Yes"
+              item?.IsNotification !== "Yes" &&
+              !hasCompleteLatestNonTodayResult(item)
             ) {
               return <p style={{ color: "#ff0000" }}>Loading...</p>;
             }
