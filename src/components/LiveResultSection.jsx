@@ -89,6 +89,28 @@ const LiveResultSection = () => {
     return Array.isArray(list) && list.some((entry) => isSameLocalDate(entry?.[2]));
   }
 
+  function getLatestEntry(arr) {
+    if (!Array.isArray(arr) || arr.length === 0) return null;
+
+    return [...arr].sort((a, b) => new Date(b[2]) - new Date(a[2]))[0];
+  }
+
+  function hasCompleteLatestNonTodayResult(game) {
+    const lastOpen = getLatestEntry(game.openNo);
+    const lastClose = getLatestEntry(game.closeNo);
+
+    if (!lastOpen?.[2] || !lastClose?.[2]) return false;
+
+    const openDateKey = String(lastOpen[2]).split("T")[0];
+    const closeDateKey = String(lastClose[2]).split("T")[0];
+
+    return (
+      openDateKey === closeDateKey &&
+      !isSameLocalDate(lastOpen[2]) &&
+      !isSameLocalDate(lastClose[2])
+    );
+  }
+
   function timeToTodayDate(timeStr) {
     if (!timeStr) return null;
 
@@ -275,8 +297,10 @@ const LiveResultSection = () => {
 
             const openTimeFromGame = game.startTime || "";
             const closeTimeFromGame = game.endTime || "";
-            const openDate = new Date(game.openNo?.[0]?.[2]);
-            const closeDate = new Date(game.closeNo?.[0]?.[2]);
+            const latestOpen = getLatestEntry(game.openNo);
+            const latestClose = getLatestEntry(game.closeNo);
+            const openDate = new Date(latestOpen?.[2]);
+            const closeDate = new Date(latestClose?.[2]);
             const lastUpdate = openDate > closeDate ? openDate : closeDate;
 
             const shouldShowOpenLoading =
@@ -286,7 +310,10 @@ const LiveResultSection = () => {
               isInResultLoadingWindow(game.endTime, now) &&
               !hasTodayResult(game.closeNo);
 
-            if (shouldShowOpenLoading || shouldShowCloseLoading) {
+            if (
+              (shouldShowOpenLoading || shouldShowCloseLoading) &&
+              !hasCompleteLatestNonTodayResult(game)
+            ) {
               return {
                 id: game._id,
                 title: game.name,
@@ -303,9 +330,8 @@ const LiveResultSection = () => {
               };
             }
 
-            const lastOpen = game.openNo?.length ? game.openNo[0] : null;
-
-            const lastClose = game.closeNo?.length ? game.closeNo[0] : null;
+            const lastOpen = latestOpen;
+            const lastClose = latestClose;
 
             // if (!lastOpen && !lastClose) {
             //   return {
