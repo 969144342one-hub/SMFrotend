@@ -36,8 +36,6 @@ export default function MatkaTable({
       .map((n) => parseInt(n, 10));
     return new Date(y, m - 1, d, 0, 0, 0, 0);
   };
-  // const redNumbers = ["44", "50", "38", "99", "61", "05", "77", "88", "66"];
-
   // Build dateMap: dateKey(YYYY-MM-DD) => { day: weekday, open, close }
   const buildDateMap = () => {
     const map = {};
@@ -116,7 +114,15 @@ export default function MatkaTable({
     .map(Number)
     .sort((a, b) => a - b);
 
-  const redNumbers = ["44", "50", "38", "99", "61", "05", "77", "88", "66", 46,67];
+  const shouldShowRedJodi = (value) => {
+    const text = String(value || "").padStart(2, "0");
+    if (!/^\d{2}$/.test(text)) return false;
+
+    const first = Number(text[0]);
+    const second = Number(text[1]);
+
+    return first === second || Math.abs(first - second) === 5;
+  };
 
   // build rows: for each week index create `daysCount` cells (local)
   const rows = weekIndexes.map((wIdx) => {
@@ -193,9 +199,7 @@ export default function MatkaTable({
             <tr key={rIdx}>
               {/* Day cells (daysCount columns) */}
               {row.cells.map((cell, cIdx) => {
-                const shouldHighlight =
-                  cell.text &&
-                  redNumbers.some((num) => cell.text.includes(num));
+                const shouldHighlight = shouldShowRedJodi(cell.text);
                 return (
                   <td
                     key={cIdx}
