@@ -1,7 +1,128 @@
 import React from "react";
-
+import { Helmet } from "react-helmet-async";
 export default function AboutUs() {
-  return (
+  return
+    <>
+  <Helmet>
+    <title>About Us | SATTA MATKA | KALYAN MATKA | DPBOSS RESULT | SATTA MATKA AAJTAK</title>
+
+    <meta
+      name="description"
+      content="Learn about Satta Matka Aaj Tak. We provide informational content, live charts, results and updates."
+    />
+
+    <meta
+      name="keywords"
+      content="About Satta Matka, Kalyan Matka, DPBoss, Mumbai Matka"
+    />
+
+    <meta name="robots" content="index,follow" />
+
+    <link
+      rel="canonical"
+      href="https://www.sattamatkaaajtak.com/about-us"
+    />
+
+    {/* Facebook */}
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="About Us | Satta Matka Aaj Tak" />
+    <meta
+      property="og:description"
+      content="Know more about Satta Matka Aaj Tak."
+    />
+    <meta
+      property="og:url"
+      content="https://www.sattamatkaaajtak.com/about-us"
+    />
+    <meta
+      property="og:image"
+      content="https://www.sattamatkaaajtak.com/favicon.png"
+    />
+
+    {/* Twitter */}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="About Us | Satta Matka Aaj Tak" />
+    <meta
+      name="twitter:description"
+      content="Know more about Satta Matka Aaj Tak."
+    />
+    <meta
+      name="twitter:image"
+      content="https://www.sattamatkaaajtak.com/favicon.png"
+    />
+
+    {/* Organization Schema */}
+    <script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: "Satta Matka Aaj Tak",
+        url: "https://www.sattamatkaaajtak.com/",
+        logo: "https://www.sattamatkaaajtak.com/favicon.png",
+      })}
+    </script>
+
+    {/* Website Schema */}
+    <script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: "Satta Matka Aaj Tak",
+        url: "https://www.sattamatkaaajtak.com/",
+      })}
+    </script>
+
+    {/* Breadcrumb Schema */}
+    <script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://www.sattamatkaaajtak.com/",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "About Us",
+            item: "https://www.sattamatkaaajtak.com/about-us",
+          },
+        ],
+      })}
+    </script>
+
+    {/* FAQ Schema */}
+    <script type="application/ld+json">
+      {JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: "What is Satta Matka Aaj Tak?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Satta Matka Aaj Tak provides informational content, charts and updates.",
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Does this website promote gambling?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "No. This website is only for informational purposes.",
+            },
+          },
+        ],
+      })}
+    </script>
+  </Helmet>
+
+</>
+  (
     <div className="min-h-screen bg-gray-50 px-4 py-8">
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-2xl p-6 md:p-10">
 
